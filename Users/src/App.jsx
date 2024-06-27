@@ -4,6 +4,8 @@ import Navbar from './Components/Navbar.jsx';
 import Home from './Components/Home.jsx';
 import Contact from './Components/Contact.jsx';
 import SelectRole from './Components/selectrole.jsx';
+import patientSignUp from './Components/Paitent/patientsignup.jsx';
+
 import './App.css';
 
 function App() {
@@ -13,7 +15,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/Contact" element={<Contact />} />
-        <Route path="/select-role" element={<SelectRole />} />
+        <Route path="/selectrole" element={<SelectRole />} />
+        <Route path="/Paitent/signup" element={<patientSignUp />} />
       </Routes>
     </div>
   );

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 // import '../CSS/Home.css';
-import SignUp from "./signup";
+// import SelectRole from './selectrole';
 
 
 const Home = () => {
@@ -12,11 +12,10 @@ const Home = () => {
         <p>
           Medick  is a secure blockchain-based platform for storage of highly sensitive and critical data related to patients that is shared among multiple facilities and agencies for effective diagnosis and treatment.
         </p>
-        <Link to="/selectrole">
-          <button className="signup-button">Getting Started!!..</button>
+        <Link to="./selectrole">
+          <button className="signup-button">Get Started!!..</button>
         </Link>
       </div>
-     
     </div>
   );
 }

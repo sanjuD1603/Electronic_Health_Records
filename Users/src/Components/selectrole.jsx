@@ -1,18 +1,18 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import doctorImage from '../assets/doctor-icon.png'; // Adjust the path to your image
-import patientImage from '../assets/patient-icon.png'; // Adjust the path to your image
-import '../assets/selectrole.css'; // Make sure to create and include your CSS file
+import doctorImage from './assets/doctor-icon.png'; 
+import patientImage from './assets/patient-icon.png'; 
+//import './assets/selectrole.css'; 
 
 const SelectRole = () => {
-    const history = useNavigate();
+    const navigate = useNavigate();
 
     const handleDoctorClick = () => {
-        history.push('/doctor-signup'); // Adjust the path as needed
+        navigate('/doctor-signup'); 
     };
 
     const handlePatientClick = () => {
-        history.push('/patient-signup'); // Adjust the path as needed
+        navigate('/Paitent/signup'); 
     };
 
     return (

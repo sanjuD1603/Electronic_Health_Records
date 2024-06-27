@@ -1,14 +1,15 @@
 import React, { useState } from "react";
-import "../assets/signup.css"
 
-const SignUp = () => {
+
+const patientSignUp = () => {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
         dateOfBirth: '',
         email: '',
         address: '',
-        phoneNumber: ''
+        phoneNumber: '',
+        metaMaskAccount: ''
     });
 
     const handleChange = (e) => {
@@ -19,16 +20,30 @@ const SignUp = () => {
         });
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
+    const connectMetaMask = async () => {
         if (typeof window.ethereum !== 'undefined') {
             try {
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const account = accounts[0];
-                
+                setFormData({
+                    ...formData,
+                    metaMaskAccount: account
+                });
+            } catch (error) {
+                console.error("MetaMask error:", error);
+            }
+        } else {
+            console.error("MetaMask not detected.");
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (formData.metaMaskAccount) {
+            try {
                 // Prepare the data to send to the backend
-                const data = { ...formData, metaMaskAccount: account };
+                const data = { ...formData };
                 
                 // Send data to the backend
                 const response = await fetch('/api/register', {
@@ -45,10 +60,10 @@ const SignUp = () => {
                     console.error("Registration failed.");
                 }
             } catch (error) {
-                console.error("MetaMask error:", error);
+                console.error("Registration error:", error);
             }
         } else {
-            console.error("MetaMask not detected.");
+            console.error("MetaMask account not connected.");
         }
     };
 
@@ -56,6 +71,16 @@ const SignUp = () => {
         <>
             <div id="signup-form">
                 <form onSubmit={handleSubmit}>
+                    <button type="button" onClick={connectMetaMask}>
+                        {formData.metaMaskAccount ? `Connected: ${formData.metaMaskAccount}` : "Connect MetaMask"}
+                    </button>
+                    <br />
+                    {formData.metaMaskAccount && (
+                        <div>
+                            MetaMask Account: {formData.metaMaskAccount}
+                            <br />
+                        </div>
+                    )}
                     <label>
                         First Name:
                         <input 
@@ -129,4 +154,4 @@ const SignUp = () => {
     );
 };
 
-export default SignUp;
+export default patientSignUp;
