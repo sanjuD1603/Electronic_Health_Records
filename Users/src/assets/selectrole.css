@@ -1,0 +1,43 @@
+.select-role {
+    text-align: center;
+    padding: 2rem;
+}
+
+.select-role h1 {
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    color: #333;
+}
+
+.role-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.role-button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    outline: none;
+    text-align: center;
+}
+
+.role-button:hover .role-image {
+    transform: scale(1.1);
+    transition: transform 0.3s;
+}
+
+.role-image {
+    width: 150px; /* Adjust as needed */
+    height: 150px; /* Adjust as needed */
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.role-button span {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 1.2rem;
+    color: #333;
+}
