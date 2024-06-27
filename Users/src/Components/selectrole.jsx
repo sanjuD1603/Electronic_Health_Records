@@ -8,11 +8,11 @@ const SelectRole = () => {
     const navigate = useNavigate();
 
     const handleDoctorClick = () => {
-        navigate('/doctor-signup'); 
+        navigate('/Doctor/doctorsignup'); 
     };
 
     const handlePatientClick = () => {
-        navigate('/Paitent/signup'); 
+        navigate('/Paitent/patientsignup'); 
     };
 
     return (

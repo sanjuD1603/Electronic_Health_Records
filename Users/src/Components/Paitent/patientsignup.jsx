@@ -1,15 +1,20 @@
 import React, { useState } from "react";
 
 
-const patientSignUp = () => {
+const PatientSignUp = () => {
+
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
         dateOfBirth: '',
         email: '',
+        gender: '',
         address: '',
         phoneNumber: '',
-        metaMaskAccount: ''
+        bloodgroup: '',
+        metaMaskAccount: '',
+        insuranceProvider: '',
+        policyNumber: ''
     });
 
     const handleChange = (e) => {
@@ -19,6 +24,10 @@ const patientSignUp = () => {
             [name]: value
         });
     };
+
+    const handleChangeBlood = (event) => {
+        setFormData(event.target.value);
+      };
 
     const connectMetaMask = async () => {
         if (typeof window.ethereum !== 'undefined') {
@@ -46,7 +55,7 @@ const patientSignUp = () => {
                 const data = { ...formData };
                 
                 // Send data to the backend
-                const response = await fetch('/api/register', {
+                const response = await fetch('/api/registerpatient', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -69,6 +78,7 @@ const patientSignUp = () => {
 
     return (
         <>
+            <h1>Patient Registration</h1>
             <div id="signup-form">
                 <form onSubmit={handleSubmit}>
                     <button type="button" onClick={connectMetaMask}>
@@ -82,7 +92,7 @@ const patientSignUp = () => {
                         </div>
                     )}
                     <label>
-                        First Name:
+                        First Name
                         <input 
                             type="text" 
                             name="firstName" 
@@ -93,7 +103,7 @@ const patientSignUp = () => {
                     </label>
                     <br />
                     <label>
-                        Last Name:
+                        Last Name
                         <input 
                             type="text" 
                             name="lastName" 
@@ -104,7 +114,7 @@ const patientSignUp = () => {
                     </label>
                     <br />
                     <label>
-                        Date of Birth:
+                        Date of Birth
                         <input 
                             type="date" 
                             name="dateOfBirth" 
@@ -115,7 +125,7 @@ const patientSignUp = () => {
                     </label>
                     <br />
                     <label>
-                        Email:
+                        Email
                         <input 
                             type="email" 
                             name="email" 
@@ -126,7 +136,7 @@ const patientSignUp = () => {
                     </label>
                     <br />
                     <label>
-                        Address:
+                        Address
                         <input 
                             type="text" 
                             name="address" 
@@ -137,7 +147,7 @@ const patientSignUp = () => {
                     </label>
                     <br />
                     <label>
-                        Phone Number:
+                        Phone Number
                         <input 
                             type="tel" 
                             name="phoneNumber" 
@@ -147,6 +157,62 @@ const patientSignUp = () => {
                         />
                     </label>
                     <br />
+                    <label>
+                        Select Blood Group
+                        <select
+                            id="gender"
+                            value={formData.gender}
+                            onChange={handleChangeBlood}
+                            >
+                            <option value="" disabled>Please Select you Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                        {formData.bloodgroup && <p>Selected Blood Group: {formData.bloodgroup}</p>}
+                    </label>
+                    <br />
+                    <label>
+                        Select Blood Group
+                        <select
+                            id="bloodGroup"
+                            value={formData.bloodgroup}
+                            onChange={handleChangeBlood}
+                            >
+                            <option value="" disabled>Select your blood group</option>
+                            <option value="A+">A+</option>
+                            <option value="A-">A-</option>
+                            <option value="B+">B+</option>
+                            <option value="B-">B-</option>
+                            <option value="AB+">AB+</option>
+                            <option value="AB-">AB-</option>
+                            <option value="O+">O+</option>
+                            <option value="O-">O-</option>
+                        </select>
+                        {formData.bloodgroup && <p>Selected Blood Group: {formData.bloodgroup}</p>}
+                    </label>
+                    <br />
+                    <label>
+                        Insurance Provider
+                        <input 
+                            type="text"
+                            name="insuranceProvider"
+                            value={formData.insuranceProvider}
+                            onChange={handleChange}
+                            required
+                        />
+                    </label>
+                    <br />
+                    <label>
+                        Policy Number
+                        <input 
+                            type="text"
+                            name="policyNumber"
+                            value={formData.policyNumber}
+                            onChange={handleChange}
+                            required
+                        />
+                    </label>
+                        <br />
                     <button type="submit">Register</button>
                 </form>
             </div>
@@ -154,4 +220,4 @@ const patientSignUp = () => {
     );
 };
 
-export default patientSignUp;
+export default PatientSignUp;
