@@ -1,7 +1,9 @@
-import React, { useState } from "react";
-
+import React, { useState, useEffect } from "react";
+import { useLocation } from 'react-router-dom';
 
 const PatientSignUp = () => {
+    const location = useLocation();
+    const metaMaskAccount = location.state?.metaMaskAccount || '';
 
     const [formData, setFormData] = useState({
         firstName: '',
@@ -12,10 +14,17 @@ const PatientSignUp = () => {
         address: '',
         phoneNumber: '',
         bloodgroup: '',
-        metaMaskAccount: '',
+        metaMaskAccount: metaMaskAccount,
         insuranceProvider: '',
         policyNumber: ''
     });
+
+    useEffect(() => {
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            metaMaskAccount: metaMaskAccount
+        }));
+    }, [metaMaskAccount]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -26,24 +35,10 @@ const PatientSignUp = () => {
     };
 
     const handleChangeBlood = (event) => {
-        setFormData(event.target.value);
-      };
-
-    const connectMetaMask = async () => {
-        if (typeof window.ethereum !== 'undefined') {
-            try {
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const account = accounts[0];
-                setFormData({
-                    ...formData,
-                    metaMaskAccount: account
-                });
-            } catch (error) {
-                console.error("MetaMask error:", error);
-            }
-        } else {
-            console.error("MetaMask not detected.");
-        }
+        setFormData({
+            ...formData,
+            bloodgroup: event.target.value
+        });
     };
 
     const handleSubmit = async (e) => {
@@ -51,10 +46,8 @@ const PatientSignUp = () => {
 
         if (formData.metaMaskAccount) {
             try {
-                // Prepare the data to send to the backend
                 const data = { ...formData };
-                
-                // Send data to the backend
+
                 const response = await fetch('/api/registerpatient', {
                     method: 'POST',
                     headers: {
@@ -81,9 +74,6 @@ const PatientSignUp = () => {
             <h1>Patient Registration</h1>
             <div id="signup-form">
                 <form onSubmit={handleSubmit}>
-                    <button type="button" onClick={connectMetaMask}>
-                        {formData.metaMaskAccount ? `Connected: ${formData.metaMaskAccount}` : "Connect MetaMask"}
-                    </button>
                     <br />
                     {formData.metaMaskAccount && (
                         <div>
@@ -158,26 +148,28 @@ const PatientSignUp = () => {
                     </label>
                     <br />
                     <label>
-                        Select Blood Group
+                        Select Gender
                         <select
                             id="gender"
+                            name="gender"
                             value={formData.gender}
-                            onChange={handleChangeBlood}
-                            >
-                            <option value="" disabled>Please Select you Gender</option>
+                            onChange={handleChange}
+                        >
+                            <option value="" disabled>Please Select your Gender</option>
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
                         </select>
-                        {formData.bloodgroup && <p>Selected Blood Group: {formData.bloodgroup}</p>}
+                        {formData.gender && <p>Selected Gender: {formData.gender}</p>}
                     </label>
                     <br />
                     <label>
                         Select Blood Group
                         <select
                             id="bloodGroup"
+                            name="bloodgroup"
                             value={formData.bloodgroup}
                             onChange={handleChangeBlood}
-                            >
+                        >
                             <option value="" disabled>Select your blood group</option>
                             <option value="A+">A+</option>
                             <option value="A-">A-</option>
@@ -212,7 +204,7 @@ const PatientSignUp = () => {
                             required
                         />
                     </label>
-                        <br />
+                    <br />
                     <button type="submit">Register</button>
                 </form>
             </div>
