@@ -1,7 +1,8 @@
+
 import React, { useState } from "react";
+import '../assets/paitentsignup.css'
 
-
-const patientSignUp = () => {
+const PatientSignUp = () => {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -71,7 +72,7 @@ const patientSignUp = () => {
         <>
             <div id="signup-form">
                 <form onSubmit={handleSubmit}>
-                    <button type="button" onClick={connectMetaMask}>
+                    <button className="button-57" type="button"  onClick={connectMetaMask}>
                         {formData.metaMaskAccount ? `Connected: ${formData.metaMaskAccount}` : "Connect MetaMask"}
                     </button>
                     <br />
@@ -147,11 +148,11 @@ const patientSignUp = () => {
                         />
                     </label>
                     <br />
-                    <button type="submit">Register</button>
+                    <button className="button-57" type="submit">Register</button>
                 </form>
             </div>
         </>
     );
 };
 
-export default patientSignUp;
+export default PatientSignUp;
