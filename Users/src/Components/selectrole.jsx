@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import doctorImage from './assets/doctor-icon.png'; 
-import patientImage from './assets/patient-icon.png'; 
-import './assets/selectrole.css'; 
+import axios from 'axios'; // Assuming axios is used for HTTP requests
+import doctorImage from './assets/doctor-icon.png';
+import patientImage from './assets/patient-icon.png';
+import './assets/selectrole.css'; // Assuming the path is correct
 
 const SelectRole = () => {
     const navigate = useNavigate();
-    const [metaMaskAccount, setMetaMaskAccount] = useState(null);
+    const [metaMaskAccount, setMetaMaskAccount] = useState('');
 
     const connectMetaMask = async () => {
         if (typeof window.ethereum !== 'undefined') {
@@ -14,6 +15,7 @@ const SelectRole = () => {
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const account = accounts[0];
                 setMetaMaskAccount(account);
+                console.log("MetaMask Account:", account);
                 return account;
             } catch (error) {
                 console.error("MetaMask error:", error);
@@ -25,17 +27,55 @@ const SelectRole = () => {
         }
     };
 
+    const saveAccountToDB = async (account, role) => {
+        try {
+            const response = await axios.post('http://localhost:5000/api/accounts', { address: account, role });
+
+            if (response.status === 201) {
+                console.log('Account created:', response.data);
+                if (role === 'doctor') {
+                    navigate('/Doctor/doctorsignup', { state: { metaMaskAccount: account } });
+                } else {
+                    navigate('/Patient/patientsignup', { state: { metaMaskAccount: account } });
+                }
+            } else if (response.status === 200) {
+                console.log('Account exists, redirecting to profile:', response.data);
+                if (role === 'doctor') {
+                    navigate('/Doctor/Viewprofile', { state: { metaMaskAccount: account } });
+                } else {
+                    navigate('/Patient/viewprofile', { state: { metaMaskAccount: account } });
+                }
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 400) {
+                alert('Address and role are required.');
+            } else if (error.response && error.response.status === 500) {
+                alert('Internal server error. Please try again later.');
+            } else {
+                console.error('Error saving account to DB:', error);
+            }
+        }
+    };
+
     const handleDoctorClick = async () => {
         const account = await connectMetaMask();
         if (account) {
-            navigate('/Doctor/doctorsignup', { state: { metaMaskAccount: account } });
+            saveAccountToDB(account, 'doctor');
         }
     };
 
     const handlePatientClick = async () => {
         const account = await connectMetaMask();
         if (account) {
-            navigate('/Patient/patientsignup', { state: { metaMaskAccount: account } });
+            saveAccountToDB(account, 'patient');
+        }
+    };
+
+    const disconnectMetaMask = () => {
+        console.log("Disconnecting MetaMask account");
+        setMetaMaskAccount('');
+        if (window.ethereum && window.ethereum.disconnect) {
+            window.ethereum.disconnect();
         }
     };
 
@@ -52,6 +92,14 @@ const SelectRole = () => {
                     <span className='role-text'>Patient</span>
                 </button>
             </div>
+            {metaMaskAccount && (
+                <div>
+                    <p>Connected MetaMask Account: {metaMaskAccount}</p>
+                    <button onClick={disconnectMetaMask} style={{ backgroundColor: 'red', color: 'white' }}>
+                        Disconnect Wallet
+                    </button>
+                </div>
+            )}
         </div>
     );
 };
