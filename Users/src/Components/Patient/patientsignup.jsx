@@ -1,3 +1,4 @@
+<<<<<<< HEAD:Users/src/Components/Patient/patientsignup.jsx
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -11,14 +12,21 @@ const PatientSignUp = () => {
     //     }
     // }, [metaMaskAccount, navigate]);
 
+=======
+
+import React, { useState } from "react";
+import '../assets/paitentsignup.css'
+
+const PatientSignUp = () => {
+>>>>>>> 152fc9a66d7cc50ad540c2768044597917385e5c:Users/src/Components/Paitent/patientsignup.jsx
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
         dateOfBirth: '',
         email: '',
-        gender: '',
         address: '',
         phoneNumber: '',
+<<<<<<< HEAD:Users/src/Components/Patient/patientsignup.jsx
         metaMaskAccount: metaMaskAccount,
         bloodgroup: '',
         insuranceProvider: '',
@@ -28,6 +36,11 @@ const PatientSignUp = () => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
+=======
+        metaMaskAccount: ''
+    });
+
+>>>>>>> 152fc9a66d7cc50ad540c2768044597917385e5c:Users/src/Components/Paitent/patientsignup.jsx
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({
@@ -36,11 +49,21 @@ const PatientSignUp = () => {
         });
     };
 
-    const handleChangeBlood = (event) => {
-        setFormData({
-            ...formData,
-            bloodgroup: event.target.value
-        });
+    const connectMetaMask = async () => {
+        if (typeof window.ethereum !== 'undefined') {
+            try {
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const account = accounts[0];
+                setFormData({
+                    ...formData,
+                    metaMaskAccount: account
+                });
+            } catch (error) {
+                console.error("MetaMask error:", error);
+            }
+        } else {
+            console.error("MetaMask not detected.");
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -48,13 +71,29 @@ const PatientSignUp = () => {
 
         if (formData.metaMaskAccount) {
             try {
+                // Prepare the data to send to the backend
                 const data = { ...formData };
+<<<<<<< HEAD:Users/src/Components/Patient/patientsignup.jsx
                 const response = await axios.post('http://localhost:5000/api/registerpatient', data);
 
                 if (response.status === 200) {
                     setSuccess("Registration successful!");
                     setError('');
                     navigate('/Patient/viewprofile', { state: { formData: data } });
+=======
+                
+                // Send data to the backend
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    console.log("Registration successful!");
+>>>>>>> 152fc9a66d7cc50ad540c2768044597917385e5c:Users/src/Components/Paitent/patientsignup.jsx
                 } else {
                     setError(response.data.message || 'Registration failed.');
                     setSuccess('');
@@ -74,9 +113,11 @@ const PatientSignUp = () => {
 
     return (
         <>
-            <h1>Patient Registration</h1>
             <div id="signup-form">
                 <form onSubmit={handleSubmit}>
+                    <button className="button-57" type="button"  onClick={connectMetaMask}>
+                        {formData.metaMaskAccount ? `Connected: ${formData.metaMaskAccount}` : "Connect MetaMask"}
+                    </button>
                     <br />
                     {formData.metaMaskAccount && (
                         <div>
@@ -87,7 +128,7 @@ const PatientSignUp = () => {
                     {error && <div style={{ color: 'red' }}>{error}</div>}
                     {success && <div style={{ color: 'green' }}>{success}</div>}
                     <label>
-                        First Name
+                        First Name:
                         <input 
                             type="text" 
                             name="firstName" 
@@ -98,7 +139,7 @@ const PatientSignUp = () => {
                     </label>
                     <br />
                     <label>
-                        Last Name
+                        Last Name:
                         <input 
                             type="text" 
                             name="lastName" 
@@ -109,7 +150,7 @@ const PatientSignUp = () => {
                     </label>
                     <br />
                     <label>
-                        Date of Birth
+                        Date of Birth:
                         <input 
                             type="date" 
                             name="dateOfBirth" 
@@ -120,7 +161,7 @@ const PatientSignUp = () => {
                     </label>
                     <br />
                     <label>
-                        Email
+                        Email:
                         <input 
                             type="email" 
                             name="email" 
@@ -131,7 +172,7 @@ const PatientSignUp = () => {
                     </label>
                     <br />
                     <label>
-                        Address
+                        Address:
                         <input 
                             type="text" 
                             name="address" 
@@ -142,7 +183,7 @@ const PatientSignUp = () => {
                     </label>
                     <br />
                     <label>
-                        Phone Number
+                        Phone Number:
                         <input 
                             type="tel" 
                             name="phoneNumber" 
@@ -152,6 +193,7 @@ const PatientSignUp = () => {
                         />
                     </label>
                     <br />
+<<<<<<< HEAD:Users/src/Components/Patient/patientsignup.jsx
                     <label>
                         Select Gender
                         <select
@@ -213,6 +255,9 @@ const PatientSignUp = () => {
                     </label>
                     <br />
                     <button type="submit">Register</button>
+=======
+                    <button className="button-57" type="submit">Register</button>
+>>>>>>> 152fc9a66d7cc50ad540c2768044597917385e5c:Users/src/Components/Paitent/patientsignup.jsx
                 </form>
             </div>
         </>

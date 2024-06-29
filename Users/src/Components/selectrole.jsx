@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
 import axios from 'axios';
 import doctorImage from './assets/doctor-icon.png';
 import patientImage from './assets/patient-icon.png';
+=======
+import doctorImage from './assets/doctor-icon.png'; 
+import patientImage from './assets/patient-icon.png'; 
+import './assets/selectrole.css'; 
+>>>>>>> 152fc9a66d7cc50ad540c2768044597917385e5c
 
 const SelectRole = () => {
 
@@ -31,6 +37,7 @@ const SelectRole = () => {
         }
     };
 
+<<<<<<< HEAD
     const saveAccountToDB = async (account, role) => {
         try {
 
@@ -62,6 +69,11 @@ const SelectRole = () => {
             }
         }
     };
+=======
+
+    const handlePatientClick = () => {
+        navigate('/Paitent/paitentsignup'); 
+>>>>>>> 152fc9a66d7cc50ad540c2768044597917385e5c
 
     const handleDoctorClick = async () => {
         const account = await connectMetaMask();
@@ -76,6 +88,7 @@ const SelectRole = () => {
             saveAccountToDB(account, 'patient');
             console.log(account);
         }
+
     };
 
     const disconnectMetaMask = () => {
@@ -91,15 +104,15 @@ const SelectRole = () => {
 
     return (
         <div className="select-role">
-            <h1>Select Your Role</h1>
+            <h1>⚕️Select Your Role⚕️</h1>
             <div className="role-buttons">
                 <button onClick={handleDoctorClick} className="role-button">
                     <img src={doctorImage} alt="Doctor" className="role-image" />
-                    <span>Doctor</span>
+                    <span className='role-text'>Doctor</span>
                 </button>
                 <button onClick={handlePatientClick} className="role-button">
                     <img src={patientImage} alt="Patient" className="role-image" />
-                    <span>Patient</span>
+                    <span className='role-text'>Patient</span>
                 </button>
             </div>
             {metaMaskAccount && (
@@ -114,4 +127,5 @@ const SelectRole = () => {
     );
 };
 
+}
 export default SelectRole;
