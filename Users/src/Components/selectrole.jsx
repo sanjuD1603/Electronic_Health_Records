@@ -25,10 +25,6 @@ const SelectRole = () => {
         }
     };
 
-
-    const handlePatientClick = () => {
-        navigate('/Paitent/paitentsignup'); 
-
     const handleDoctorClick = async () => {
         const account = await connectMetaMask();
         if (account) {
@@ -41,7 +37,6 @@ const SelectRole = () => {
         if (account) {
             navigate('/Patient/patientsignup', { state: { metaMaskAccount: account } });
         }
-
     };
 
     return (
@@ -61,5 +56,4 @@ const SelectRole = () => {
     );
 };
 
-}
 export default SelectRole;
