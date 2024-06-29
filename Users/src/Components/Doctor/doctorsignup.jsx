@@ -1,7 +1,12 @@
 import React, { useState } from "react";
+import { useLocation } from 'react-router-dom';
+import axios from "axios";
 import "../assets/signup.css";
 
 const SignUp = () => {
+    const location = useLocation();
+    const metaMaskAccount = location.state?.metaMaskAccount || '';
+
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -9,12 +14,14 @@ const SignUp = () => {
         email: '',
         address: '',
         phoneNumber: '',
-        metaMaskAccount: '',
+        metaMaskAccount: metaMaskAccount,
         specialization: '',
         medicalLicenseNumber: '',
         yearsOfExperience: '',
-        
     });
+
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -24,23 +31,6 @@ const SignUp = () => {
         });
     };
 
-    const connectMetaMask = async () => {
-        if (typeof window.ethereum !== 'undefined') {
-            try {
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const account = accounts[0];
-                setFormData({
-                    ...formData,
-                    metaMaskAccount: account
-                });
-            } catch (error) {
-                console.error("MetaMask error:", error);
-            }
-        } else {
-            console.error("MetaMask not detected.");
-        }
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -48,25 +38,21 @@ const SignUp = () => {
             try {
                 // Prepare the data to send to the backend
                 const data = { ...formData };
-                
-                // Send data to the backend
-                const response = await fetch('/api/registerdoctor', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                if (response.ok) {
-                    console.log("Registration successful!");
+                const response = await axios.post('http://localhost:5000/api/registerdoctor', data);
+                if (response.status === 200) {
+                    setSuccess("Registration successful!");
+                    setError('');
+                    navigate('/Doctor/Viewprofile', { state: { formData: data } });
                 } else {
-                    console.error("Registration failed.");
+                    setError(response.data.message || 'Registration failed.');
+                    console.error("Registration failed.", response.data);
                 }
             } catch (error) {
+                setError(error.response?.data?.message || 'Registration error.');
                 console.error("Registration error:", error);
             }
         } else {
+            setError("MetaMask account not connected.");
             console.error("MetaMask account not connected.");
         }
     };
@@ -75,16 +61,16 @@ const SignUp = () => {
         <>
             <div id="signup-form">
                 <form onSubmit={handleSubmit}>
-                    <button type="button" onClick={connectMetaMask}>
-                        {formData.metaMaskAccount ? `Connected: ${formData.metaMaskAccount}` : "Connect MetaMask"}
-                    </button>
-                    <br />
+                    <h1>Doctor Registration</h1>
                     {formData.metaMaskAccount && (
                         <div>
                             MetaMask Account: {formData.metaMaskAccount}
                             <br />
                         </div>
                     )}
+                    {error && <div className="error-message" style={{ color: 'red' }}>{error}</div>}
+                    {success && <div className="success-message" style={{ color: 'green' }}>{success}</div>}
+                    
                     <label>
                         First Name
                         <input 
@@ -181,10 +167,10 @@ const SignUp = () => {
                             value={formData.yearsOfExperience}
                             onChange={handleChange}
                             required
+                            min="0"
                         />
                     </label>
                     <br />
-                
                     <button type="submit">Register</button>
                 </form>
             </div>

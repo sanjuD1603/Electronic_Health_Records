@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const PatientSignUp = () => {
     const location = useLocation();
     const metaMaskAccount = location.state?.metaMaskAccount || '';
+    // useEffect(() => {
+    //     if (!metaMaskAccount) {
+    //         navigate('../selectrole');
+    //     }
+    // }, [metaMaskAccount, navigate]);
 
     const [formData, setFormData] = useState({
         firstName: '',
@@ -13,18 +19,14 @@ const PatientSignUp = () => {
         gender: '',
         address: '',
         phoneNumber: '',
-        bloodgroup: '',
         metaMaskAccount: metaMaskAccount,
+        bloodgroup: '',
         insuranceProvider: '',
         policyNumber: ''
     });
 
-    useEffect(() => {
-        setFormData((prevFormData) => ({
-            ...prevFormData,
-            metaMaskAccount: metaMaskAccount
-        }));
-    }, [metaMaskAccount]);
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -47,24 +49,25 @@ const PatientSignUp = () => {
         if (formData.metaMaskAccount) {
             try {
                 const data = { ...formData };
+                const response = await axios.post('http://localhost:5000/api/registerpatient', data);
 
-                const response = await fetch('/api/registerpatient', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                if (response.ok) {
-                    console.log("Registration successful!");
+                if (response.status === 200) {
+                    setSuccess("Registration successful!");
+                    setError('');
+                    navigate('/Patient/viewprofile', { state: { formData: data } });
                 } else {
-                    console.error("Registration failed.");
+                    setError(response.data.message || 'Registration failed.');
+                    setSuccess('');
+                    console.error("Registration failed.", response.data);
                 }
             } catch (error) {
+                setError(error.response?.data?.message || 'Registration error.');
+                setSuccess('');
                 console.error("Registration error:", error);
             }
         } else {
+            setError("MetaMask account not connected.");
+            setSuccess('');
             console.error("MetaMask account not connected.");
         }
     };
@@ -81,6 +84,8 @@ const PatientSignUp = () => {
                             <br />
                         </div>
                     )}
+                    {error && <div style={{ color: 'red' }}>{error}</div>}
+                    {success && <div style={{ color: 'green' }}>{success}</div>}
                     <label>
                         First Name
                         <input 
@@ -154,6 +159,7 @@ const PatientSignUp = () => {
                             name="gender"
                             value={formData.gender}
                             onChange={handleChange}
+                            required
                         >
                             <option value="" disabled>Please Select your Gender</option>
                             <option value="Male">Male</option>
@@ -169,6 +175,7 @@ const PatientSignUp = () => {
                             name="bloodgroup"
                             value={formData.bloodgroup}
                             onChange={handleChangeBlood}
+                            required
                         >
                             <option value="" disabled>Select your blood group</option>
                             <option value="A+">A+</option>

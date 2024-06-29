@@ -1,26 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-const DoctorViewProfile = () => {
+const PatientViewProfile = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const formData = location.state?.formData;
 
-    // Optional: Handle redirection if formData is not available
-    React.useEffect(() => {
-        if (!formData) {
-            navigate('/Doctor/doctorsignup');
-        }
-    }, [formData, navigate]);
-
-    // Optional: Handle initial loading state or display if formData is not yet available
+    
     if (!formData) {
-        return <p>Loading...</p>;
+        useEffect(() => {
+            if (!formData) {
+                navigate('/Patient/patientsignup');
+            }
+        }, [formData, navigate]);
+        return <p>No profile data available</p>;
     }
 
+    
     return (
         <>
-            <h1>This is Doctor View Profile</h1>
             <h1>Welcome Back, {formData.firstName}!</h1>
             <p><strong>First Name:</strong> {formData.firstName}</p>
             <p><strong>Last Name:</strong> {formData.lastName}</p>
@@ -35,6 +33,6 @@ const DoctorViewProfile = () => {
             <p><strong>Policy Number:</strong> {formData.policyNumber}</p>
         </>
     );
-}
+};
 
-export default DoctorViewProfile;
+export default PatientViewProfile;
