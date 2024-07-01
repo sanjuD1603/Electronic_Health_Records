@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; // Assuming axios is used for HTTP requests
+import axios from 'axios';
 import doctorImage from './assets/doctor-icon.png';
 import patientImage from './assets/patient-icon.png';
-import './assets/selectrole.css'; // Assuming the path is correct
+import './assets/selectrole.css';
 
 const SelectRole = () => {
-    const navigate = useNavigate();
+    const navigate = useNavigate(); // Ensure useNavigate is correctly imported and used
     const [metaMaskAccount, setMetaMaskAccount] = useState('');
 
     const connectMetaMask = async () => {

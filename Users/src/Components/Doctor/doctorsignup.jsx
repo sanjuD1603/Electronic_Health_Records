@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import "../assets/signup.css";
 
 const SignUp = () => {
     const location = useLocation();
+    const navigate = useNavigate();
     const metaMaskAccount = location.state?.metaMaskAccount || '';
 
     const [formData, setFormData] = useState({
@@ -36,13 +37,11 @@ const SignUp = () => {
 
         if (formData.metaMaskAccount) {
             try {
-                // Prepare the data to send to the backend
-                const data = { ...formData };
-                const response = await axios.post('http://localhost:5000/api/registerdoctor', data);
+                const response = await axios.post('http://localhost:5000/api/registerdoctor', formData);
                 if (response.status === 200) {
                     setSuccess("Registration successful!");
                     setError('');
-                    navigate('/Doctor/Viewprofile', { state: { formData: data } });
+                    navigate('/Doctor/Viewprofile', { state: { formData } });
                 } else {
                     setError(response.data.message || 'Registration failed.');
                     console.error("Registration failed.", response.data);
