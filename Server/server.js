@@ -14,6 +14,7 @@ const db_url = process.env.MONGO_URI || 'mongodb://localhost:27017/ehr';
 
 // Middleware
 app.use(cors());
+app.use(cors());
 app.use(bodyParser.json());
 
 // MongoDB connection
@@ -116,6 +117,16 @@ app.get('/api/registerpatient', async (req, res) => {
 
 
 app.post('/api/registerdoctor', async (req, res) => {
+    const {metaMaskAccount, medicalLicenseNumber} = req.body;
+    
+    try {
+      const existingPatient = await Doctor.findOne({
+        $or: [{ metaMaskAccount }, { medicalLicenseNumber }]
+      });
+      if (existingPatient) {
+        return res.status(400).json({ message: 'User with this MetaMask account or email already exists.' });
+      }  
+      const newDoctor = new Doctor(req.body);
     const {metaMaskAccount, medicalLicenseNumber} = req.body;
     
     try {

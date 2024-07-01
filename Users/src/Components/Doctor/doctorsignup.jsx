@@ -16,11 +16,10 @@ const DoctorSignUp = () => {
         email: '',
         address: '',
         phoneNumber: '',
-        metaMaskAccount: '',
+        metaMaskAccount: metaMaskAccount,
         specialization: '',
         medicalLicenseNumber: '',
         yearsOfExperience: '',
-        
     });
 
     useEffect(() => {
@@ -89,6 +88,9 @@ const DoctorSignUp = () => {
                             <br />
                         </div>
                     )}
+                    {error && <div className="error-message" style={{ color: 'red' }}>{error}</div>}
+                    {success && <div className="success-message" style={{ color: 'green' }}>{success}</div>}
+                    
                     <label>
                         First Name
                         <input 
@@ -185,10 +187,10 @@ const DoctorSignUp = () => {
                             value={formData.yearsOfExperience}
                             onChange={handleChange}
                             required
+                            min="0"
                         />
                     </label>
                     <br />
-                
                     <button type="submit">Register</button>
                 </form>
             </div>

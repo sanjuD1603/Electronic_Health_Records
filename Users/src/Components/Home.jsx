@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-// import '../CSS/Home.css';
 
-
+import '../Components/Css/Home.css';
+import doctorPatientImage from '../Components/assets/Images/doctorPatientImage.png'; // Adjust the path as necessary
 
 const Home = () => {
   return (
@@ -10,11 +10,14 @@ const Home = () => {
       <div className="home-content">
         <h1>Health Record System</h1>
         <p>
-          Medick  is a secure blockchain-based platform for storage of highly sensitive and critical data related to patients that is shared among multiple facilities and agencies for effective diagnosis and treatment.
+          Medick is a secure blockchain-based platform for storage of highly sensitive and critical data related to patients that is shared among multiple facilities and agencies for effective diagnosis and treatment.
         </p>
         <Link to="./selectrole">
-          <button className="signup-button">Get Started!!..</button>
+          <button className="button-57">Get Started!!..</button>
         </Link>
+      </div>
+      <div className="home-image">
+        <img src={doctorPatientImage} alt="Doctor and Patient" />
       </div>
     </div>
   );

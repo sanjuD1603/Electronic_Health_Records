@@ -1,0 +1,64 @@
+.home-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  color: #000000; 
+  margin-top: 200px;
+
+.home-content {
+  flex: 1;
+  text-align: center;
+}
+
+.home-content h1 {
+  color: #000000; 
+}
+
+.home-content p {
+  color: #090909; 
+}
+
+.signup-button {
+  background-color: #66b2ff; 
+  color: #ffffff; 
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  position: relative;
+  left: 8px;
+  top: 30px;
+}
+
+.signup-button:hover {
+  background-color: #00c6ff; 
+}
+
+.home-image {
+  flex: 1;
+  text-align: right;
+}
+
+.home-image img {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  .home-container {
+    flex-direction: column;
+    text-align: center;
+    margin-top: 100px; 
+  }
+
+  .home-content, .home-image {
+    flex: none;
+  }
+
+  .home-image {
+    margin-top: 20px;
+  }
+}
+
+}

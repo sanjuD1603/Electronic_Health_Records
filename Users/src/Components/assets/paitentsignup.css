@@ -1,0 +1,79 @@
+#signup-form {
+    max-width: 360px; /* Decreased max-width */
+    margin: 130px auto; /* Increased margin for distance from top navbar */
+    padding: 15px; /* Decreased padding */
+    border-radius: 8px; /* Adjusted border-radius */
+
+  
+}
+
+#signup-form form {
+    display: flex;
+    flex-direction: column;
+}
+
+#signup-form label {
+    margin-bottom: 8px; /* Decreased margin bottom for labels */
+    font-weight: bold; /* Added bold font weight to labels */
+}
+
+#signup-form input[type="text"],
+#signup-form input[type="date"],
+#signup-form input[type="email"],
+#signup-form input[type="tel"],
+#signup-form button[type="submit"],
+#signup-form button[type="button"] {
+    width: calc(100% - 16px); /* Adjusted width to accommodate border width */
+    padding: 12px; /* Increased padding for inputs */
+    margin-bottom: 12px; /* Decreased margin bottom for inputs */
+    border: 1px solid #ccc;
+    border-radius: 20px; /* Increased border-radius for more curved edges */
+    font-size: 14px; /* Decreased font size */
+    padding-left: 8px; /* Added left padding for input fields */
+    box-sizing: border-box; /* Ensures padding doesn't affect overall width */
+}
+
+.button-57 {
+    background-color: #0078d0;
+    border: 0;
+    border-radius: 56px;
+    color: #fff;
+    cursor: pointer;
+    font-family: system-ui, -apple-system, system-ui, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    outline: 0;
+    padding: 16px 21px;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    overflow: hidden;
+    display: inline-block; /* Ensures button is inline */
+}
+
+.button-57:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 4%;
+    width: 92%;
+    height: 50%;
+    border-radius: 125px;
+    background-image: linear-gradient(#fff 0, rgba(255, 255, 255, 0) 100%);
+    opacity: 0.5;
+    transition: all 0.3s;
+}
+
+.button-57:hover {
+    box-shadow: rgba(255, 255, 255, 0.2) 0 3px 15px inset, rgba(0, 0, 0, 0.1) 0 3px 5px, rgba(0, 0, 0, 0.1) 0 10px 13px;
+    transform: scale(1.05);
+}
+
+@media (min-width: 768px) {
+    #signup-form {
+        padding: 10px;
+    }
+}
