@@ -1,7 +1,14 @@
-import React, { useState } from "react";
-import "../assets/signup.css";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 
-const SignUp = () => {
+const DoctorSignUp = () => {
+
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const [metaMaskAccount, setMetaMaskAccount] = useState(location.state?.metaMaskAccount || "Failed to Fetch Wallet Address");
+
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -16,6 +23,29 @@ const SignUp = () => {
         
     });
 
+    useEffect(() => {
+        const fetchAccount = async () => {
+            if (metaMaskAccount === 'Failed to Fetch Wallet Address') {
+                try {
+                    const response = await axios.get('http://localhost:5000/api/accounts');
+                    setMetaMaskAccount(response.data.account || 'Failed to Fetch Wallet Address');
+                } catch (error) {
+                    console.error("Error fetching MetaMask account:", error);
+                }
+            }
+        };
+        fetchAccount();
+    }, [metaMaskAccount]);
+
+    useEffect(() => {
+        setFormData(prevFormData => ({
+            ...prevFormData,
+            metaMaskAccount
+        }));
+    }, [metaMaskAccount]);
+
+
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({
@@ -24,50 +54,27 @@ const SignUp = () => {
         });
     };
 
-    const connectMetaMask = async () => {
-        if (typeof window.ethereum !== 'undefined') {
-            try {
-                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const account = accounts[0];
-                setFormData({
-                    ...formData,
-                    metaMaskAccount: account
-                });
-            } catch (error) {
-                console.error("MetaMask error:", error);
-            }
-        } else {
-            console.error("MetaMask not detected.");
-        }
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (formData.metaMaskAccount) {
-            try {
-                // Prepare the data to send to the backend
-                const data = { ...formData };
-                
-                // Send data to the backend
-                const response = await fetch('/api/registerdoctor', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
+        if (!formData.metaMaskAccount || formData.metaMaskAccount === 'Failed to Fetch Wallet Address') {
+            alert("MetaMask account not connected.");
+            return;
+        }
 
-                if (response.ok) {
-                    console.log("Registration successful!");
-                } else {
-                    console.error("Registration failed.");
-                }
-            } catch (error) {
-                console.error("Registration error:", error);
+        try {
+            const response = await axios.post('http://localhost:5000/api/registerdoctor', formData);
+
+            if (response.status === 200) {
+                alert("Registration successful!");
+                navigate('/Doctor/Viewprofile', { state: { formData } });
+            } else {
+                alert(response.data.message || 'Registration failed.');
+                console.error("Registration failed.", response.data);
             }
-        } else {
-            console.error("MetaMask account not connected.");
+        } catch (error) {
+            alert(error.response?.data?.message || 'Registration error.');
+            console.error("Registration error:", error);
         }
     };
 
@@ -75,9 +82,6 @@ const SignUp = () => {
         <>
             <div id="signup-form">
                 <form onSubmit={handleSubmit}>
-                    <button type="button" onClick={connectMetaMask}>
-                        {formData.metaMaskAccount ? `Connected: ${formData.metaMaskAccount}` : "Connect MetaMask"}
-                    </button>
                     <br />
                     {formData.metaMaskAccount && (
                         <div>
@@ -192,4 +196,4 @@ const SignUp = () => {
     );
 };
 
-export default SignUp;
+export default DoctorSignUp;
