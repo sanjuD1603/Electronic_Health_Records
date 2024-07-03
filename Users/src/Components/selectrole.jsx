@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import doctorImage from './assets/doctor-icon.png'; 
 import patientImage from './assets/patient-icon.png'; 
 import detectEthereumProvider from '@metamask/detect-provider';
-import { useState } from 'react';
+// import { useState } from 'react';
 import axios from 'axios';
 //import './assets/selectrole.css'; 
 

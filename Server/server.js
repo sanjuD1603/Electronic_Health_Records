@@ -10,7 +10,8 @@ const Account = require('./models/accounts');
 
 const app = express();
 const port = process.env.PORT || 5000;
-const db_url = process.env.MONGO_URI || 'mongodb://localhost:27017/ehr';
+const db_url = 'mongodb://localhost:27017/ehr';
+
 
 // Middleware
 app.use(cors());
@@ -29,7 +30,7 @@ db.once('open', () => {
 
 app.post('/api/accounts', async (req, res) => {
   const { address, role } = req.body;
-  console.log(req.body);
+  // console.log(req.body);
 
   // Validate request body
   if (!address || !role) {
@@ -44,16 +45,16 @@ app.post('/api/accounts', async (req, res) => {
           // Create new account
           account = new Account({ address, role });
           await account.save();
-          console.log("201***********************************************************************", res.status(201));
+          // console.log("201***********************************************************************", res.status(201));
           return res.status(201).json(account);
       } else {
           // Validate role from database
           if (account.role !== role) {
-              console.log("400***********************************************************************", res.status(400));
+              // console.log("400***********************************************************************", res.status(400));
               return res.status(400).json({ error: 'Role mismatch with existing account' });
           }
           // Return a specific code when account is found
-          console.log("200***********************************************************************", res.status(200));
+          // console.log("200***********************************************************************", res.status(200));
           return res.status(200).json({ message: 'Account already exists', account });
       }
   } catch (error) {
@@ -127,21 +128,12 @@ app.post('/api/registerdoctor', async (req, res) => {
         return res.status(400).json({ message: 'User with this MetaMask account or email already exists.' });
       }  
       const newDoctor = new Doctor(req.body);
-    const {metaMaskAccount, medicalLicenseNumber} = req.body;
-    
-    try {
-      const existingPatient = await Doctor.findOne({
-        $or: [{ metaMaskAccount }, { medicalLicenseNumber }]
-      });
-      if (existingPatient) {
-        return res.status(400).json({ message: 'User with this MetaMask account or email already exists.' });
-      }  
-      const newDoctor = new Doctor(req.body);
       await newDoctor.save();
       res.status(200).json({ message: 'Registration successful!' });
     } catch (error) {
       res.status(500).json({ message: 'Registration failed.', error });
     }
+  
   });
 
   app.get('/api/registerdoctor', async (req, res) => {

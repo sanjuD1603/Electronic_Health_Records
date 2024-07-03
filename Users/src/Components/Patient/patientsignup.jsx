@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import patientInfo from "../Ethereum/Contracts/patientInfo.json";
 import axios from "axios";
+import Web3 from 'web3';
 
 const PatientSignUp = () => {
     const location = useLocation();
@@ -58,8 +60,103 @@ const PatientSignUp = () => {
         });
     };
 
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    
+    //     if (!formData.metaMaskAccount || formData.metaMaskAccount === 'Failed to Fetch Wallet Address') {
+    //         alert("MetaMask account not connected.");
+    //         return;
+    //     }
+    
+    //     try {
+    //         const response = await axios.post('http://localhost:5000/api/registerpatient', formData);
+    
+    //         if (response.status === 200 || response.status === 201) {
+    //             alert("Registration successful!");
+    //             navigate('/Patient/viewprofile', { state: { metaMaskAccount: formData.metaMaskAccount } });
+    //         } else {
+    //             alert(response.data.message || 'Registration failed.');
+    //             console.error("Registration failed.", response.data);
+    //         }
+    //     } catch (error) {
+    //         alert(error.response?.data?.message || 'Registration error.');
+    //         console.error("Registration error:", error);
+    //     }
+    // };
+
+        // Initialize Web3
+    
+    const [state, setState] = useState({web3: null, contract: null,});
+    const [data, setData] = useState("");
+
+    useEffect(() => {
+        const provider = new Web3.providers.HttpProvider("http://127.0.0.1:7545");
+
+        async function setupContract() {
+            const web3 = new Web3(provider);
+            const networkId = await web3.eth.net.getId();
+            const deployedNetwork = patientInfo.networks[networkId];
+            const contract = new web3.eth.Contract(
+                patientInfo.abi,
+                deployedNetwork && deployedNetwork.address
+            );
+            console.log(contract.address);
+            setState({ web3: web3, contract: contract });
+        }
+
+        if (provider) {
+            setupContract();
+        }
+    }, []);
+
+    useEffect(() => {
+        const { contract } = state;
+    
+        async function readData() {
+            try {
+                if (contract) {
+                    const metaMaskAccount = formData.metaMaskAccount;
+                    const data = await contract.methods.getPatient(metaMaskAccount).call();
+                    console.log("Fetched Data Using getPatient():", data); // Print data to console
+                    setData(data); // Set data in component state if needed
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                // Handle error as per your application needs
+            }
+        }
+    
+        readData();
+    
+    }, [state]);
+
+    useEffect(() => {
+        const { contract } = state;
+    
+        async function getEmail() {
+            try {
+                if (contract) {
+                    const metaMaskAccount = formData.metaMaskAccount;
+                    const data = await contract.methods.getEmailByMetaMask(metaMaskAccount).call();
+                    console.log("Fetched Data using getEmailByMetaMask():", data); // Print data to console
+                    setData(data); // Set data in component state if needed
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                // Handle error as per your application needs
+            }
+        }
+    
+        getEmail();
+    
+    }, [state]);
+    
+    
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+    
+        const { web3, contract } = state; // Destructure contract from state
     
         if (!formData.metaMaskAccount || formData.metaMaskAccount === 'Failed to Fetch Wallet Address') {
             alert("MetaMask account not connected.");
@@ -67,22 +164,52 @@ const PatientSignUp = () => {
         }
     
         try {
-            const response = await axios.post('http://localhost:5000/api/registerpatient', formData);
-    
-            if (response.status === 200 || response.status === 201) {
-                alert("Registration successful!");
-                navigate('/Patient/viewprofile', { state: { metaMaskAccount: formData.metaMaskAccount } });
-            } else {
-                alert(response.data.message || 'Registration failed.');
-                console.error("Registration failed.", response.data);
+            if (!contract) {
+                throw new Error("Contract not initialized.");
             }
+    
+            // Validate and format MetaMask account address
+            const metaMaskAccount = web3.utils.toChecksumAddress(formData.metaMaskAccount);
+    
+            // Example: Convert numbers to BigInt
+            const gasLimit = BigInt(5000000);
+            const gasPrice = BigInt('20000000000');
+    
+            // Call the smart contract function
+            const transaction = await contract.methods.registerPatient(
+                formData.firstName,
+                formData.lastName,
+                formData.dateOfBirth,
+                formData.email,
+                formData.gender,
+                formData.address,
+                formData.phoneNumber,
+                formData.bloodgroup,
+                metaMaskAccount, // Use formatted address here
+                formData.insuranceProvider,
+                formData.policyNumber
+            ).send({ from: "0x658a6AE5b54839C1dE445a79AD6944cdDa6D6331", gas: gasLimit, gasPrice: gasPrice });
+    
+            console.log("Transaction hash:", transaction.transactionHash);
+    
+            // Handle successful registration
+            alert("Registration successful!");
+            // Example navigation if using react-router-dom
+            // navigate('/Patient/viewprofile', { state: { metaMaskAccount: formData.metaMaskAccount } });
+
+            
+
         } catch (error) {
-            alert(error.response?.data?.message || 'Registration error.');
+            // Handle errors
+            alert(error.message || 'Registration error.');
             console.error("Registration error:", error);
         }
     };
-    
 
+    
+    
+    
+    
     return (
         <>
             <h1>Patient Registration</h1>
