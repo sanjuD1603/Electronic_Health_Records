@@ -19,6 +19,8 @@ contract patientInfo {
     mapping(address => string) public metaMaskToEmail;
     mapping(address => Patient) public patients;
 
+    event PatientExists(Patient patient);
+
     function registerPatient(
         string memory _firstName,
         string memory _lastName,
@@ -32,6 +34,12 @@ contract patientInfo {
         string memory _insuranceProvider,
         string memory _policyNumber
     ) public {
+        if (bytes(metaMaskToEmail[_metaMaskAccount]).length != 0) {
+            Patient memory existingPatient = patients[_metaMaskAccount];
+            emit PatientExists(existingPatient);
+            return;
+        }
+
         patients[_metaMaskAccount] = Patient(
             _firstName,
             _lastName,
@@ -48,7 +56,6 @@ contract patientInfo {
 
         metaMaskToEmail[_metaMaskAccount] = _email;
     }
-
     function getPatient(address _metaMaskAccount) public view returns (Patient memory) {
         return patients[_metaMaskAccount];
     }
