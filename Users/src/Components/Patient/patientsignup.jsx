@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import patientInfo from "../Ethereum/Contracts/patientInfo.json";
-import axios from "axios";
-import Web3 from "web3";
+// import axios from "axios";
+import { web3, setupContract } from "../Ethereum/Contracts/web3";
 
 const PatientSignUp = () => {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const [state, setState] = useState({ web3: null, contract: null });
+  const [data, setData] = useState("");
 
   const [metaMaskAccount, setMetaMaskAccount] = useState(
     location.state?.metaMaskAccount || "Failed to Fetch Wallet Address"
@@ -21,28 +23,28 @@ const PatientSignUp = () => {
     address: "",
     phoneNumber: "",
     bloodgroup: "",
-    metaMaskAccount: "",
+    metaMaskAccount: metaMaskAccount,
     insuranceProvider: "",
     policyNumber: "",
   });
 
-  useEffect(() => {
-    const fetchAccount = async () => {
-      if (metaMaskAccount === "Failed to Fetch Wallet Address") {
-        try {
-          const response = await axios.get(
-            "http://localhost:5000/api/accounts"
-          );
-          setMetaMaskAccount(
-            response.data.account || "Failed to Fetch Wallet Address"
-          );
-        } catch (error) {
-          console.error("Error fetching MetaMask account:", error);
-        }
-      }
-    };
-    fetchAccount();
-  }, [metaMaskAccount]);
+  // useEffect(() => {
+  //   const fetchAccount = async () => {
+  //     if (metaMaskAccount === "Failed to Fetch Wallet Address") {
+  //       try {
+  //         const response = await axios.get(
+  //           "http://localhost:5000/api/accounts"
+  //         );
+  //         setMetaMaskAccount(
+  //           response.data.account || "Failed to Fetch Wallet Address"
+  //         );
+  //       } catch (error) {
+  //         console.error("Error fetching MetaMask account:", error);
+  //       }
+  //     }
+  //   };
+  //   fetchAccount();
+  // }, [metaMaskAccount]);
 
   useEffect(() => {
     setFormData((prevFormData) => ({
@@ -92,22 +94,11 @@ const PatientSignUp = () => {
 
   // Initialize Web3
 
-  const [state, setState] = useState({ web3: null, contract: null });
-  const [data, setData] = useState("");
-
   useEffect(() => {
-    const provider = new Web3.providers.HttpProvider("http://127.0.0.1:7545");
-
-    async function setupContract() {
-      const web3 = new Web3(provider);
-      const networkId = await web3.eth.net.getId();
-      const deployedNetwork = patientInfo.networks[networkId];
-      const contract = new web3.eth.Contract(
-        patientInfo.abi,
-        deployedNetwork && deployedNetwork.address
-      );
-      console.log(contract.address);
-      setState({ web3: web3, contract: contract });
+    async function fetchContract() {
+      const contract = await setupContract();
+      setState({ web3, contract });
+      console.log("Created Contract Address", contract.options.address);
       contract
         .getPastEvents("PatientExists")
         .then(function (events) {
@@ -130,9 +121,8 @@ const PatientSignUp = () => {
         });
     }
 
-    if (provider) {
-      setupContract();
-    }
+    fetchContract();
+    
   }, []);
 
   useEffect(() => {
@@ -223,13 +213,33 @@ const PatientSignUp = () => {
           formData.policyNumber
         )
         .send({
-          from: "0x49C65495f011b51a56583Ac1509dc879abE6D226",
+          from: metaMaskAccount,
           gas: gasLimit,
           gasPrice: gasPrice,
         });
 
       console.log("Transaction hash:", transaction.transactionHash);
 
+      contract
+        .getPastEvents("PatientExists")
+        .then(function (events) {
+          // Process the retrieved events
+          console.log(events);
+          if (events.length > 0) {
+            const event = events[0];
+            const returnValues = event.returnValues.patient;
+            navigate("/Patient/viewprofile", {
+              state: {
+                metaMaskAccount: formData.metaMaskAccount,
+                patient: returnValues,
+              },
+            });
+          }
+        })
+        .catch(function (error) {
+          // Handle errors
+          console.error(error);
+        });
       // Handle successful registration
       alert("Registration successful!");
       // Example navigation if using react-router-dom

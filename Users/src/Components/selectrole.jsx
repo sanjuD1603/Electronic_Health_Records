@@ -1,11 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import detectEthereumProvider from "@metamask/detect-provider";
 import doctorImage from "./assets/doctor-icon.png";
 import patientImage from "./assets/patient-icon.png";
-import detectEthereumProvider from "@metamask/detect-provider";
-// import { useState } from 'react';
-import axios from "axios";
-//import './assets/selectrole.css';
+import { setupContract } from "./Ethereum/Contracts/web3";
 
 const SelectRole = () => {
   const navigate = useNavigate();
@@ -21,7 +19,6 @@ const SelectRole = () => {
         });
         const account = accounts[0];
         setMetaMaskAccount(account);
-        console.log("MetaMask Account:", account);
         return account;
       } catch (error) {
         console.error("MetaMask error:", error);
@@ -33,45 +30,66 @@ const SelectRole = () => {
     }
   };
 
-  const saveAccountToDB = async (account, role) => {
+  const saveAccountToContract = async (account, role) => {
     try {
-      const response = await axios.post("http://localhost:5000/api/accounts", {
-        address: account,
-        role,
-      });
-      console.log(response.status);
-      console.log("Account created:", response.data);
-      if (role === "doctor") {
-        await navigate("/Doctor/doctorsignup", {
-          state: { metaMaskAccount: account },
+      const contract = await setupContract();
+
+      // Check if account is already registered
+      const accountInfo = await contract.methods.getAccount(account).call();
+      if (accountInfo.isRegistered) {
+        console.log("Account already has a registered role:", accountInfo.role);
+
+        // Redirect based on role
+        if (accountInfo.role === "patient") {
+          navigate("/Patient/viewprofile", {
+            state: {
+              metaMaskAccount: account,
+            },
+          });
+        } else {
+          // Redirect to another page for different roles (doctor)
+          // navigate("/Doctor/dashboard");
+          console.log("Redirecting to doctor dashboard");
+        }
+        return;
+      }
+      const gasLimit = BigInt(5000000);
+      const gasPrice = BigInt("20000000000");
+
+      // Register the account with role in the contract
+      await contract.methods
+        .registerAccount(account, role)
+        .send({ from: account, gas: gasLimit, gasPrice: gasPrice });
+      console.log("Account registered with role:", role);
+
+      // Redirect based on role after registration
+      if (role === "patient") {
+        navigate("/Patient/patientsignup", {
+          state: {
+            metaMaskAccount: account,
+          },
         });
       } else {
-        await navigate("/Patient/patientsignup", {
-          state: { metaMaskAccount: account },
-        });
+        // Redirect to another page for different roles (doctor)
+        // navigate("/Doctor/doctorsignup");
+        console.log("Redirecting to doctor signup");
       }
     } catch (error) {
-      if (error.response && error.response.status === 400) {
-        alert("Address and role are required.");
-      } else if (error.response && error.response.status === 500) {
-        alert("Internal server error. Please try again later.");
-      } else {
-        console.error("Error saving account to DB:", error);
-      }
+      console.error("Error saving account to contract:", error);
     }
   };
 
   const handleDoctorClick = async () => {
     const account = await connectMetaMask();
     if (account) {
-      saveAccountToDB(account, "doctor");
+      saveAccountToContract(account, "doctor");
     }
   };
 
   const handlePatientClick = async () => {
     const account = await connectMetaMask();
     if (account) {
-      saveAccountToDB(account, "patient");
+      saveAccountToContract(account, "patient");
     }
   };
 
@@ -85,7 +103,7 @@ const SelectRole = () => {
 
   return (
     <div className="select-role">
-      <h1>⚕️Select Your Role⚕️</h1>
+      <h1>⚕️ Select Your Role ⚕️</h1>
       <div className="role-buttons">
         <button onClick={handleDoctorClick} className="role-button">
           <img src={doctorImage} alt="Doctor" className="role-image" />
