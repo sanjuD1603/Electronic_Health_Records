@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import {web3, setupContract} from "../Ethereum/Contracts/web3";
 
 const PatientViewProfile = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  console.log(location.state.patient);
   const metaMaskAccount = location.state?.metaMaskAccount;
+  console.log(metaMaskAccount);
+  console.log(location.state.patient);
   const [formData, setFormData] = useState(null);
+
   useEffect(() => {
     setFormData({
       firstName: location.state.patient["0"],

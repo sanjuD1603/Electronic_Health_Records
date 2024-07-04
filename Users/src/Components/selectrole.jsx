@@ -41,11 +41,26 @@ const SelectRole = () => {
 
         // Redirect based on role
         if (accountInfo.role === "patient") {
-          navigate("/Patient/viewprofile", {
-            state: {
-              metaMaskAccount: account,
-            },
-          });
+          contract
+        .getPastEvents("PatientExists")
+        .then(function (events) {
+          // Process the retrieved events
+          console.log(events);
+          if (events.length > 0) {
+            const event = events[0];
+            const returnValues = event.returnValues.patient;
+            navigate("/Patient/viewprofile", {
+              state: {
+                metaMaskAccount: account,
+                patient: returnValues,
+              },
+            });
+          }
+        })
+        .catch(function (error) {
+          // Handle errors
+          console.error(error);
+        });
         } else {
           // Redirect to another page for different roles (doctor)
           // navigate("/Doctor/dashboard");
