@@ -94,37 +94,37 @@ const PatientSignUp = () => {
 
   // Initialize Web3
 
-  useEffect(() => {
-    async function fetchContract() {
-      const contract = await setupContract();
-      setState({ web3, contract });
-      console.log("Created Contract Address", contract.options.address);
-      contract
-        .getPastEvents("PatientExists")
-        .then(function (events) {
-          // Process the retrieved events
-          console.log(events);
-          if (events.length > 0) {
-            const event = events[0];
-            const returnValues = event.returnValues.patient;
-            navigate("/Patient/viewprofile", {
-              state: {
-                metaMaskAccount: formData.metaMaskAccount,
-                patient: returnValues,
-              },
-            });
-          }
-        })
-        .catch(function (error) {
-          // Handle errors
-          console.error(error);
-        });
-    }
+  // useEffect(() => {
+  //   async function fetchContract() {
+  //     const contract = await setupContract();
+  //     setState({ web3, contract });
+  //     console.log("Created Contract Address", contract.options.address);
+  //     contract
+  //       .getPastEvents("PatientExists")
+  //       .then(function (events) {
+  //         // Process the retrieved events
+  //         console.log(events);
+  //         if (events.length > 0) {
+  //           const event = events[0];
+  //           const returnValues = event.returnValues.patient;
+  //           navigate("/Patient/viewprofile", {
+  //             state: {
+  //               metaMaskAccount: formData.metaMaskAccount,
+  //               patient: returnValues,
+  //             },
+  //           });
+  //         }
+  //       })
+  //       .catch(function (error) {
+  //         // Handle errors
+  //         console.error(error);
+  //       });
+  //   }
 
-    fetchContract();
+  //   fetchContract();
+
+  // }, []);
     
-  }, []);
-
   useEffect(() => {
     const { contract } = state;
 

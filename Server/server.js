@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 
 // MongoDB connection
 
-mongoose.connect(db_url, {useNewUrlParser: true, useUnifiedTopology: true,});
+mongoose.connect("mongodb+srv://sanjudinesh169:J486iMbcJmFv2VnH@ehr.uzvhjub.mongodb.net/?retryWrites=true&w=majority&appName=ehr", {useNewUrlParser: true, useUnifiedTopology: true,});
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));

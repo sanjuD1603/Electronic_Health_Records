@@ -1,3 +1,4 @@
+/* Select Role Styles */
 .select-role {
   text-align: center;
   padding: 180px 40px;
@@ -69,9 +70,8 @@
 /* Additional styles for navbar */
 .navbar {
   display: flex;
-  justify-content: space-between;
-  padding: 20px 30px;
   align-items: center;
+  padding: 20px 30px;
   width: 100%;
   position: fixed;
   top: 0;
@@ -79,28 +79,6 @@
   z-index: 1000;
   background-color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.nav-links {
-  list-style: none;
-  display: flex;
-  position: relative;
-  right: 200px;
-  margin: 0;
-}
-
-.nav-links li {
-  padding: 0 20px;
-}
-
-.nav-links a {
-  color: #66b2ff;
-  text-decoration: none;
-  font-size: 1.2em;
-}
-
-.nav-links a:hover {
-  color: #00c6ff;
 }
 
 .logoimg {
@@ -113,58 +91,48 @@
   margin-right: 15px;
 }
 
+.logoname-container {
+  display: flex;
+  align-items: center;
+  margin-right: auto; /* Ensure logo and names are on the left */
+}
+
 .logoname {
   font-size: 2.5em;
   font-weight: bold;
   background: linear-gradient(to right, #0072ff, #00c6ff);
   -webkit-background-clip: text;
   color: transparent;
-  display: inline;
-  margin-left: 20px;
-  flex-grow: 1;
-  position: relative;
-  right: 760px;
-  text-decoration: none;
+  margin-left: 280px;
 }
 
 .logoname1 {
   font-size: 2.5em;
   font-weight: bold;
-  color: transparent;
   background: linear-gradient(to right, #000000, #666767);
   -webkit-background-clip: text;
-  position: relative;
-  right: 1500px;
-  text-decoration: none;
-}
-
-.logoname:hover,
-.logoname1:hover {
   color: transparent;
+  margin-left: 240px;
 }
 
-@media (max-width: 768px) {
-  .navbar {
-      flex-direction: column;
-      align-items: flex-start;
-      padding: 15px;
-  }
+.nav-links {
+  list-style: none;
+  display: flex;
+  margin-left: auto; /* Ensure links are on the right */
+}
 
-  .nav-links {
-      display: block;
-      text-align: center;
-      right: 0;
-      margin-top: 10px;
-  }
+.nav-links li {
+  padding: 0 10px;
+}
 
-  .nav-links li {
-      padding: 10px 0;
-  }
+.nav-links a {
+  color: #66b2ff;
+  text-decoration: none;
+  font-size: 1.2em;
+}
 
-  .logoname {
-      margin-left: 0;
-      margin-bottom: 10px;
-  }
+.nav-links a:hover {
+  color: #00c6ff;
 }
 
 .button-57 {
@@ -178,7 +146,7 @@
   font-size: 18px;
   font-weight: 600;
   outline: 0;
-  padding: 16px 21px;
+  padding: 16px 32px;
   position: relative;
   text-align: center;
   text-decoration: none;
@@ -187,6 +155,7 @@
   -webkit-user-select: none;
   touch-action: manipulation;
   overflow: hidden;
+  margin-left: 60px; /* Adjust margin if needed */
 }
 
 .button-57:before {
@@ -204,12 +173,29 @@
 }
 
 .button-57:hover {
-  box-shadow: rgba(255, 255, 255, .2) 0 3px 15px inset, rgba(0, 0, 0, .1) 0 3px 5px, rgba(0, 0, 0, .1) 0 10px 13px;
+  box-shadow: rgba(255, 255, 255, 0.2) 0 3px 15px inset, rgba(0, 0, 0, .1) 0 3px 5px, rgba(0, 0, 0, .1) 0 10px 13px;
   transform: scale(1.05);
 }
 
-@media (min-width: 768px) {
-  .button-57 {
-      padding: 16px 48px;
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 15px;
+  }
+
+  .nav-links {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .nav-links li {
+    padding: 10px 0;
+  }
+
+  .logoname {
+    margin-left: 0;
+    margin-bottom: 10px;
   }
 }

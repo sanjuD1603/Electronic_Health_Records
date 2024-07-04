@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import detectEthereumProvider from "@metamask/detect-provider";
 import doctorImage from "./assets/doctor-icon.png";
 import patientImage from "./assets/patient-icon.png";
 import { setupContract } from "./Ethereum/Contracts/web3";
+import { PatientContext } from './PatientContext';  // Import the context
 
 const SelectRole = () => {
   const navigate = useNavigate();
-  const [metaMaskAccount, setMetaMaskAccount] = useState("");
+  const { setPatientDetails, setMetaMaskAccount } = useContext(PatientContext);  // Use the context
+  const [localMetaMaskAccount, setLocalMetaMaskAccount] = useState("");
 
   const connectMetaMask = async () => {
     const provider = await detectEthereumProvider();
@@ -18,7 +20,8 @@ const SelectRole = () => {
           method: "eth_requestAccounts",
         });
         const account = accounts[0];
-        setMetaMaskAccount(account);
+        setLocalMetaMaskAccount(account);
+        setMetaMaskAccount(account);  // Set the context state
         return account;
       } catch (error) {
         console.error("MetaMask error:", error);
@@ -34,59 +37,50 @@ const SelectRole = () => {
     try {
       const contract = await setupContract();
 
-      // Check if account is already registered
       const accountInfo = await contract.methods.getAccount(account).call();
       if (accountInfo.isRegistered) {
-        console.log("Account already has a registered role:", accountInfo.role);
-
-        // Redirect based on role
         if (accountInfo.role === "patient") {
           contract
-        .getPastEvents("PatientExists")
-        .then(function (events) {
-          // Process the retrieved events
-          console.log(events);
-          if (events.length > 0) {
-            const event = events[0];
-            const returnValues = event.returnValues.patient;
-            navigate("/Patient/viewprofile", {
-              state: {
-                metaMaskAccount: account,
-                patient: returnValues,
-              },
+            .getPastEvents("PatientExists")
+            .then(async function (events) {
+              if (events.length > 0) {
+                const event = events[0];
+                const returnValues = event.returnValues;
+                setPatientDetails(returnValues.patient);  // Set the context state
+                navigate("/patient/dashboard", {
+                  state: {
+                    metaMaskAccount: account,
+                    patient: returnValues.patient,
+                  },
+                });
+              } else {
+                navigate("/patient/patientsignup", {
+                  state: { metaMaskAccount: account },
+                });
+              }
+            })
+            .catch(function (error) {
+              console.error(error);
             });
-          }
-        })
-        .catch(function (error) {
-          // Handle errors
-          console.error(error);
-        });
         } else {
-          // Redirect to another page for different roles (doctor)
-          // navigate("/Doctor/dashboard");
           console.log("Redirecting to doctor dashboard");
         }
         return;
       }
+
       const gasLimit = BigInt(5000000);
       const gasPrice = BigInt("20000000000");
 
-      // Register the account with role in the contract
       await contract.methods
         .registerAccount(account, role)
         .send({ from: account, gas: gasLimit, gasPrice: gasPrice });
       console.log("Account registered with role:", role);
 
-      // Redirect based on role after registration
       if (role === "patient") {
-        navigate("/Patient/patientsignup", {
-          state: {
-            metaMaskAccount: account,
-          },
+        navigate("/patient/patientsignup", {
+          state: { metaMaskAccount: account },
         });
       } else {
-        // Redirect to another page for different roles (doctor)
-        // navigate("/Doctor/doctorsignup");
         console.log("Redirecting to doctor signup");
       }
     } catch (error) {
@@ -110,7 +104,7 @@ const SelectRole = () => {
 
   const disconnectMetaMask = () => {
     console.log("Disconnecting MetaMask account");
-    setMetaMaskAccount("");
+    setLocalMetaMaskAccount("");
     if (window.ethereum && window.ethereum.disconnect) {
       window.ethereum.disconnect();
     }
@@ -129,9 +123,9 @@ const SelectRole = () => {
           <span className="role-text">Patient</span>
         </button>
       </div>
-      {metaMaskAccount && (
+      {localMetaMaskAccount && (
         <div>
-          <p>Connected MetaMask Account: {metaMaskAccount}</p>
+          <p>Connected MetaMask Account: {localMetaMaskAccount}</p>
           <button
             onClick={disconnectMetaMask}
             style={{ backgroundColor: "red", color: "white" }}
