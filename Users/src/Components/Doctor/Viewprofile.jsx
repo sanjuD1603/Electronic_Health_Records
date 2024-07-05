@@ -4,13 +4,10 @@ import axios from "axios";
 
 const DoctorViewProfile = () => {
     const location = useLocation();
-    // console.log(location.state);
     const navigate = useNavigate();
     const metaMaskAccount = location.state?.metaMaskAccount;
     const [formData, setFormData] = useState(null);
 
-    // console.log(metaMaskAccount)
-    
     useEffect(() => {
         setFormData({
             firstName: location.state.doctor["firstName"],
@@ -22,9 +19,9 @@ const DoctorViewProfile = () => {
             metaMaskAccount: location.state.doctor["metaMaskAccount"],
             medicalLicenseNumber: location.state.doctor["medicalLicenseNumber"],
             yearsOfExperience: location.state.doctor["yearsOfExperience"]
-        })
-    })
-    
+        });
+    }, [location.state.doctor]);
+
     if (!formData) {
         return <p>Loading...</p>;
     }

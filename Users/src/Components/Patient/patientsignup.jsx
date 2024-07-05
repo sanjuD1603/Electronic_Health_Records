@@ -150,7 +150,7 @@ const PatientSignUp = () => {
           if (event) {
             const returnValues = event.returnValues.patient;
             console.log("viewprofile");
-            navigate("/patient/viewprofile", {
+            navigate("/patient/Dashboard", {
               state: {
                 metaMaskAccount: formData.metaMaskAccount,
                 patient: returnValues,

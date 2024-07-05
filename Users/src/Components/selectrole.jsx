@@ -8,7 +8,7 @@ import { PatientContext } from "./PatientContext";
 
 const SelectRole = () => {
   const navigate = useNavigate();
-  const [localmetaMaskAccount, setlocalMetaMaskAccount] = useState("");
+  const [metaMaskAccount, setmetaMaskAccount] = useState("");
   const { setPatientDetails, setMetaMaskAccount } = useContext(PatientContext);
   const [state, setState] = useState({ web3: null, contract: null });
 
@@ -21,7 +21,7 @@ const SelectRole = () => {
           method: "eth_requestAccounts",
         });
         const account = accounts[0];
-        setlocalMetaMaskAccount(account);
+        setmetaMaskAccount(account);
         setMetaMaskAccount(account);
         return account;
       } catch (error) {
@@ -49,13 +49,13 @@ const SelectRole = () => {
       if (role === "patient") {
         navigate("/Patient/patientsignup", {
           state: {
-            localmetaMaskAccount: account,
+            metaMaskAccount: account,
           },
         });
       } else {
         navigate("/Doctor/doctorsignup", {
           state: {
-            localmetaMaskAccount: account,
+            metaMaskAccount: account,
           },
         });
       }
@@ -87,10 +87,10 @@ const SelectRole = () => {
         if (event) {
           const returnValues = event.returnValues[role];
           navigate(
-            `/${role === "patient" ? "Patient" : "Doctor"}/viewprofile`,
+            `/${role === "patient" ? "Patient" : "Doctor"}/Dashboard`,
             {
               state: {
-                localmetaMaskAccount: account,
+                metaMaskAccount: account,
                 [role]: returnValues,
               },
             }
@@ -125,13 +125,13 @@ const SelectRole = () => {
           if (role === "patient") {
             navigate("/Patient/patientsignup", {
               state: {
-                localmetaMaskAccount: account,
+                metaMaskAccount: account,
               },
             });
           } else {
             navigate("/Doctor/doctorsignup", {
               state: {
-                localmetaMaskAccount: account,
+                metaMaskAccount: account,
               },
             });
           }
@@ -168,7 +168,7 @@ const SelectRole = () => {
 
   const disconnectMetaMask = () => {
     console.log("Disconnecting MetaMask account");
-    setlocalMetaMaskAccount("");
+    setmetaMaskAccount("");
     if (window.ethereum && window.ethereum.disconnect) {
       window.ethereum.disconnect();
     }
@@ -187,9 +187,9 @@ const SelectRole = () => {
           <span className="role-text">Patient</span>
         </button>
       </div>
-      {localmetaMaskAccount && (
+      {metaMaskAccount && (
         <div>
-          <p>Connected MetaMask Account: {localmetaMaskAccount}</p>
+          <p>Connected MetaMask Account: {metaMaskAccount}</p>
           <button
             onClick={disconnectMetaMask}
             style={{ backgroundColor: "red", color: "white" }}

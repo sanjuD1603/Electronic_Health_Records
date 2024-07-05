@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useLocation, useNavigate } from 'react-router-dom';
 import '../Css/UploadFiles.css'; // Import the CSS file
 
 const UploadFiles = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  console.log(location.state);
+
   const [file, setFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState([]);
   const [metaMaskAccount, setMetaMaskAccount] = useState(() => {
