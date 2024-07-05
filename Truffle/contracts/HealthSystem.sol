@@ -35,6 +35,15 @@ contract HealthSystem {
         bool isRegistered;
     }
 
+    struct Meeting {
+        //which doc??
+        address patient;
+        address doctor;
+        string meetingTime;
+        string meetingLink;
+    }
+
+    
     mapping(address => string) public metaMaskToEmail;
     mapping(address => Patient) public patients;
     mapping(address => Doctor) public doctors;
@@ -168,4 +177,14 @@ contract HealthSystem {
     function performAction(address _metaMaskAccount) public view onlyRegisteredAccount(_metaMaskAccount) {
         require(hasPersonalInfo(_metaMaskAccount), "Account does not have personal info stored");
     }
+
+    function setMeeting(address _doctor, address _patient, string memory _meetingTime, string memory _meetingLink) public view {
+        Meeting memory newMeeting = Meeting({
+        patient : _patient,
+        doctor : _doctor,
+        meetingTime :_meetingTime,
+        meetingLink : _meetingLink
+        });
+    }
+
 }

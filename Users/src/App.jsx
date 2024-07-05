@@ -5,13 +5,19 @@ import Home from './Components/Home';
 import Contact from './Components/Contact';
 import SelectRole from './Components/selectrole';
 import PatientSignUp from './Components/Patient/patientsignup';
-import DoctorSignUp from './Components/Doctor/doctorsignup';
-import DoctorViewProfile from './Components/Doctor/Viewprofile';
 import PatientDashboard from './Components/Patient/Dashboard';
 import PatientViewProfile from './Components/Patient/viewprofile';
-import DoctorDashBoard  from './Components/Doctor/Dashboard';
 import ViewDoctors from './Components/Patient/ViewDoctors';
+  import DoctorCard from './Components/Patient/DisplayDoctors/DoctorCard';
+  import DoctorDetails from './Components/Patient/DisplayDoctors/DoctorDetails';
+  import DoctorGrid from './Components/Patient/DisplayDoctors/DoctorGrid';
+
 import UploadFiles from './Components/Patient/UploadFiles';
+
+
+import DoctorSignUp from './Components/Doctor/doctorsignup';
+import DoctorViewProfile from './Components/Doctor/Viewprofile';
+import DoctorDashBoard  from './Components/Doctor/Dashboard';
 import ViewPatients from './Components/Doctor/ViewPatients';
 import DocUploadFiles from './Components/Doctor/UploadFiles';
 import { PatientProvider } from './Components/PatientContext'; // Import PatientProvider
@@ -35,6 +41,12 @@ function App() {
           <Route path="/patient/viewprofile" element={<PatientViewProfile />} />
           <Route path="/patient/ViewDoctors" element={<ViewDoctors />} />
           <Route path="/patient/UploadFiles" element={<UploadFiles />} />
+
+            {/* Display Doctors */}
+            <Route path="/patient/displaydoctors/doctorcard" element={<DoctorCard />} />
+            <Route path="/patient/displaydoctors/doctordetails/:email" element={<DoctorDetails />} />
+            <Route path="/patient/displaydoctors/doctorgrid" element={<DoctorGrid />} />
+
 
           {/* Doctor Directory */}
           <Route path="/doctor/doctorsignup" element={<DoctorSignUp />} />
