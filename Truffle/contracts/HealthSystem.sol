@@ -35,6 +35,58 @@ contract HealthSystem {
         string role;
         bool isRegistered;
     }
+    
+    struct Meeting {
+        address patientAddress;
+        address doctorAddress;
+        uint256 meetingTime;
+        string meetingDescription;
+    }
+
+    Meeting[] public meetings;
+
+    function createMeeting(address _patientAddress, address _doctorAddress, string memory _meetingDescription, uint256 _meetingTime) public {
+        meetings.push(Meeting({
+            patientAddress: _patientAddress,
+            doctorAddress: _doctorAddress,
+            meetingTime: _meetingTime,
+            meetingDescription: _meetingDescription
+        }));
+    }
+
+       function getPatientMeetings(address _patientAddress) public view returns (Meeting[] memory) {
+       Meeting[] memory patientMeetings = new Meeting[](meetings.length);
+       uint256 count = 0;
+
+       for(uint256 i =0; i < meetings.length; i++){
+        if(meetings[i].patientAddress == _patientAddress){
+            patientMeetings[count] = meetings[i];
+            count++;
+        }
+       }
+
+       assembly {
+        mstore(patientMeetings, count)
+       }
+       return patientMeetings;
+    }
+
+       function getDoctorMeetings(address _doctorAddress) public view returns (Meeting[] memory) {
+        Meeting[] memory doctorMeetings = new Meeting[](meetings.length);
+       uint256 count = 0;
+
+       for(uint256 i =0; i < meetings.length; i++){
+        if(meetings[i].doctorAddress == _doctorAddress){
+            doctorMeetings[count] = meetings[i];
+            count++;
+        }
+       }
+
+       assembly {
+        mstore(doctorMeetings, count)
+       }
+       return doctorMeetings;    
+       }
 
     mapping(address => string) public metaMaskToEmail;
     mapping(address => Patient) public patients;
