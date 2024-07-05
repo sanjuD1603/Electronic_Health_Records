@@ -45,7 +45,7 @@ contract HealthSystem {
     event DoctorExists(address indexed metaMaskAccount, Doctor doctor);
     event DoctorRegistered(address indexed metaMaskAccount, string email);
     event AccountRegistered(address indexed metaMaskAccount, string role);
-    event AccountExists(address indexed metaMaskAccount, string role);
+    event AccountExists(address indexed metaMaskAccount, Account account);
 
     modifier onlyRegisteredAccount(address _metaMaskAccount) {
         require(accounts[_metaMaskAccount].isRegistered, "Account is not registered");
@@ -137,6 +137,7 @@ contract HealthSystem {
 
         // Emit event for account registration
         emit AccountRegistered(_metaMaskAccount, _role);
+        emit AccountExists(_metaMaskAccount, accounts[_metaMaskAccount]);
     }
 
     function getPatient(address _metaMaskAccount) public view returns (Patient memory) {

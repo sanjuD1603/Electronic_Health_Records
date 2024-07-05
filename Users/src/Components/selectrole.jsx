@@ -9,7 +9,7 @@ import { PatientContext } from "./PatientContext";
 const SelectRole = () => {
   const navigate = useNavigate();
   const [localmetaMaskAccount, setlocalMetaMaskAccount] = useState("");
-  const {setPatientDetails, setMetaMaskAccount} = useContext(PatientContext);
+  const { setPatientDetails, setMetaMaskAccount } = useContext(PatientContext);
   const [state, setState] = useState({ web3: null, contract: null });
 
   const connectMetaMask = async () => {
@@ -73,22 +73,19 @@ const SelectRole = () => {
     try {
       const eventName = role === "patient" ? "PatientExists" : "DoctorExists";
       const events = await contract.getPastEvents(eventName, {
-        filter: { localmetaMaskAccount: account },
+        filter: { metaMaskAccount: account },
         fromBlock: 0,
         toBlock: "latest",
       });
-      console.log(events);
+
       if (events.length > 0) {
         const event = events.find(
           (e) =>
-            e.returnValues.localmetaMaskAccount.toLowerCase() === account.toLowerCase()
+            e.returnValues.metaMaskAccount.toLowerCase() ===
+            account.toLowerCase()
         );
-        console.log(event);
         if (event) {
           const returnValues = event.returnValues[role];
-          console.log(
-            `/${role === "patient" ? "Patient" : "Doctor"}/viewprofile`
-          );
           navigate(
             `/${role === "patient" ? "Patient" : "Doctor"}/viewprofile`,
             {
@@ -115,7 +112,6 @@ const SelectRole = () => {
   const saveAccountToContract = async (account, role) => {
     try {
       const contract = await setupContract();
-      // console.log(contract);
       if (!contract) {
         throw new Error("Contract not initialized.");
       }
@@ -127,7 +123,6 @@ const SelectRole = () => {
         if (!hasInfo) {
           alert("Account does not have personal information stored.");
           if (role === "patient") {
-            console.log(account);
             navigate("/Patient/patientsignup", {
               state: {
                 localmetaMaskAccount: account,
@@ -142,6 +137,11 @@ const SelectRole = () => {
           }
           return;
         }
+        // Emit AccountExists event
+        contract.events.AccountExists({
+          filter: { metaMaskAccount: account },
+        });
+
         await fetchAndNavigateBasedOnRole(contract, account, accountInfo.role);
       } else {
         await registerAndRedirect(contract, account, role);
