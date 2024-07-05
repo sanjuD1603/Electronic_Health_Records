@@ -1,20 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import axios from "axios";
+import { setupContract } from "../Ethereum/Contracts/web3";
 
 const DoctorSignUp = () => {
-
+    // console.log("Doctor SignUp");
     const location = useLocation();
     const navigate = useNavigate();
 
-    const [metaMaskAccount, setMetaMaskAccount] = useState(location.state?.metaMaskAccount || "Failed to Fetch Wallet Address");
+    console.log(location.state);
+
+    const [metaMaskAccount, setMetaMaskAccount] = useState(location.state?.localmetaMaskAccount || "Failed to Fetch Wallet Address");
+    const [error, setError] = useState(null);
+    const [state, setState] = useState({ web3: null, contract: null });
+    const [success, setSuccess] = useState(null);
 
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
         dateOfBirth: '',
         email: '',
-        address: '',
+        doctorAddress: '',
         phoneNumber: '',
         metaMaskAccount: metaMaskAccount,
         specialization: '',
@@ -22,19 +27,17 @@ const DoctorSignUp = () => {
         yearsOfExperience: '',
     });
 
-    useEffect(() => {
-        const fetchAccount = async () => {
-            if (metaMaskAccount === 'Failed to Fetch Wallet Address') {
-                try {
-                    const response = await axios.get('http://localhost:5000/api/accounts');
-                    setMetaMaskAccount(response.data.account || 'Failed to Fetch Wallet Address');
-                } catch (error) {
-                    console.error("Error fetching MetaMask account:", error);
-                }
-            }
-        };
-        fetchAccount();
-    }, [metaMaskAccount]);
+    // useEffect(() => {
+    //     const initialize = async () => {
+    //       try {
+    //         const { web3, contract } = await setupContract();
+    //         setState({ web3, contract });
+    //       } catch (error) {
+    //         console.error("Error initializing contract:", error);
+    //       }
+    //     };
+    //     initialize();
+    //   }, []);
 
     useEffect(() => {
         setFormData(prevFormData => ({
@@ -42,8 +45,6 @@ const DoctorSignUp = () => {
             metaMaskAccount
         }));
     }, [metaMaskAccount]);
-
-
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -62,23 +63,75 @@ const DoctorSignUp = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:5000/api/registerdoctor', formData);
-
-            if (response.status === 200) {
-                alert("Registration successful!");
-                navigate('/Doctor/Viewprofile', { state: { formData } });
-            } else {
-                alert(response.data.message || 'Registration failed.');
-                console.error("Registration failed.", response.data);
+            const contract = await setupContract();
+            if (!contract) {
+                throw new Error("Contract not initialized.");
             }
+            // const {web3, contract} = state;
+
+            if (!contract) {
+                throw new Error("Contract not initialized.");
+            }
+
+            // Register doctor on blockchain
+            const transaction = await contract.methods
+                .registerDoctor(
+                    formData.firstName,
+                    formData.lastName,
+                    formData.dateOfBirth,
+                    formData.email,
+                    formData.doctorAddress,
+                    formData.phoneNumber,
+                    formData.metaMaskAccount,
+                    formData.specialization,
+                    formData.medicalLicenseNumber,
+                    formData.yearsOfExperience
+                ).send({ from: formData.metaMaskAccount,
+                    gas: 5000000,
+                    gasPrice: "20000000000", 
+                });
+                console.log("Doctor Transaction Hash: ", transaction.transactionHash);
+            setSuccess("Registration successful!");
+
+            try {
+                  const events = await contract.getPastEvents("DoctorExists", {
+                    filter: { metaMaskAccount: formData.metaMaskAccount },
+                    fromBlock: 0,
+                    toBlock: 'latest'
+                  });
+                  console.log(events);
+                  if (events.length > 0) {
+                    const event = events.find(e => e.returnValues.metaMaskAccount.toLowerCase() === formData.metaMaskAccount.toLowerCase());
+                    console.log(event);
+                    if (event) {
+                      const returnValues = event.returnValues.doctor;
+                    //   console.log("/Viewprofile");
+                      navigate("/Doctor/Viewprofile", {
+                        state: {
+                          metaMaskAccount: formData.metaMaskAccount,
+                          doctor: returnValues,
+                        },
+                      });
+                    } else {
+                      console.error("No matching 'DoctorExists' event found for account:", formData.metaMaskAccount);
+                    }
+                  } else {
+                    console.error("No 'DoctorExists' event found.");
+                  }
+              } catch (error) {
+                console.error("Error fetching 'DoctorExists' events:", error.message);
+              }
+
+            // navigate('/Doctor/Viewprofile', { state: { formData } });
         } catch (error) {
-            alert(error.response?.data?.message || 'Registration error.');
-            console.error("Registration error:", error);
+            setError(error.response?.data?.message || 'Registration error.');
+            console.error("Registration error:", error.message);
         }
     };
 
     return (
         <>
+        <h1>Doctor Registration Form</h1>
             <div id="signup-form">
                 <form onSubmit={handleSubmit}>
                     <br />
@@ -139,8 +192,8 @@ const DoctorSignUp = () => {
                         Address
                         <input 
                             type="text" 
-                            name="address" 
-                            value={formData.address} 
+                            name="doctorAddress" 
+                            value={formData.doctorAddress} 
                             onChange={handleChange} 
                             required 
                         />

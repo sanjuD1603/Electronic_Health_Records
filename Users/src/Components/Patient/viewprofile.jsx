@@ -1,30 +1,51 @@
-import React, { useEffect, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
-import PatientNavbar from './PatientNavbar';
-import { PatientContext } from '../PatientContext';
-import profileImage from '../assets/profile-placeholder.jpg'; // Update the path to your image
-import '../Css/PatientViewProfile.css'; // Import the CSS file
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { web3, setupContract } from "../Ethereum/Contracts/web3";
 
 const PatientViewProfile = () => {
+  console.log("Patient view Profile");
+  const location = useLocation();
   const navigate = useNavigate();
-  const { patientDetails, metaMaskAccount } = useContext(PatientContext);
+  console.log(location.state)
+  const metaMaskAccount = location.state?.metaMaskAccount;
+  // console.log(metaMaskAccount);
+  // console.log(location.state.patient);
+  const [formData, setFormData] = useState(null);
 
   useEffect(() => {
-    console.log("Patient data on mount:", patientDetails, metaMaskAccount);
-    if (!patientDetails) {
-      console.log("Patient data not found, navigating back to dashboard");
-      navigate('/patient/dashboard'); // Navigate to a safe page if patient details are missing
-    }
-  }, [patientDetails, metaMaskAccount, navigate]);
+    setFormData({
+      firstName: location.state.patient["0"],
+      lastName: location.state.patient["1"],
+      email: location.state.patient["3"],
+      dateOfBirth: location.state.patient["2"],
+      gender: location.state.patient["4"],
+      address: location.state.patient["5"],
+      phoneNumber: location.state.patient["6"],
+      bloodGroup: location.state.patient["7"],
+      metaMaskAccount: location.state.patient["8"],
+      insuranceProvider: location.state.patient["9"],
+      policyNumber: location.state.patient["10"],
+    });
+  }, [location.state.patient]);
 
-  if (!patientDetails) {
+  useEffect(() => {
+    if (!metaMaskAccount) {
+      navigate("/Patient/patientsignup");
+    } else {
+
+    }
+  }, [metaMaskAccount, navigate]);
+
+  if (!formData) {
     return <p>Loading profile data...</p>;
   }
 
+  // Determine title based on gender
   const getTitle = () => {
-    if (patientDetails.gender === "Male") {
+    if (formData.gender === "Male") {
       return "Mr.";
-    } else if (patientDetails.gender === "Female") {
+    } else if (formData.gender === "Female") {
       return "Mrs.";
     } else {
       return ""; // Handle other genders as needed
@@ -33,52 +54,42 @@ const PatientViewProfile = () => {
 
   return (
     <>
-      <PatientNavbar />
-      <div className="profile-container">
-        <img src={profileImage} alt="Profile" className="profile-image" />
-        <h1>
-          Welcome Back, {getTitle()} {patientDetails.firstName}!
-        </h1>
-        <div className="profile-info">
-          <div className="info-left">
-            <p>
-              <strong>First Name:</strong> {patientDetails.firstName}
-            </p>
-            <p>
-              <strong>Last Name:</strong> {patientDetails.lastName}
-            </p>
-            <p>
-              <strong>Date of Birth:</strong> {patientDetails.dateOfBirth}
-            </p>
-            <p>
-              <strong>Email:</strong> {patientDetails.email}
-            </p>
-            <p>
-              <strong>Gender:</strong> {patientDetails.gender}
-            </p>
-          </div>
-          <div className="info-right">
-            <p>
-              <strong>Address:</strong> {patientDetails.patientAddress}
-            </p>
-            <p>
-              <strong>Phone Number:</strong> {patientDetails.phoneNumber}
-            </p>
-            <p>
-              <strong>Blood Group:</strong> {patientDetails.bloodgroup}
-            </p>
-            {/* <p>
-              <strong>MetaMask Account:</strong> {patientDetails.metaMaskAccount}
-            </p> */}
-            <p>
-              <strong>Insurance Provider:</strong> {patientDetails.insuranceProvider}
-            </p>
-            <p>
-              <strong>Policy Number:</strong> {patientDetails.policyNumber}
-            </p>
-          </div>
-        </div>
-      </div>
+      <h1>
+        Welcome Back, {getTitle()} {formData.firstName}!
+      </h1>
+      <p>
+        <strong>First Name:</strong> {formData.firstName}
+      </p>
+      <p>
+        <strong>Last Name:</strong> {formData.lastName}
+      </p>
+      <p>
+        <strong>Date of Birth:</strong> {formData.dateOfBirth}
+      </p>
+      <p>
+        <strong>Email:</strong> {formData.email}
+      </p>
+      <p>
+        <strong>Gender:</strong> {formData.gender}
+      </p>
+      <p>
+        <strong>Address:</strong> {formData.address}
+      </p>
+      <p>
+        <strong>Phone Number:</strong> {formData.phoneNumber}
+      </p>
+      <p>
+        <strong>Blood Group:</strong> {formData.bloodGroup}
+      </p>
+      <p>
+        <strong>MetaMask Account:</strong> {formData.metaMaskAccount}
+      </p>
+      <p>
+        <strong>Insurance Provider:</strong> {formData.insuranceProvider}
+      </p>
+      <p>
+        <strong>Policy Number:</strong> {formData.policyNumber}
+      </p>
     </>
   );
 };

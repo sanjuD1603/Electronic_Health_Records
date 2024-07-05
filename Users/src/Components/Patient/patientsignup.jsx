@@ -1,15 +1,11 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-// import axios from "axios";
-import { web3, setupContract } from "../Ethereum/Contracts/web3";
-
+import { setupContract } from "../Ethereum/Contracts/web3";
+import web3 from "web3";
 const PatientSignUp = () => {
   const location = useLocation();
   const navigate = useNavigate();
-
   const [state, setState] = useState({ web3: null, contract: null });
-  const [data, setData] = useState("");
-
   const [metaMaskAccount, setMetaMaskAccount] = useState(
     location.state?.metaMaskAccount || "Failed to Fetch Wallet Address"
   );
@@ -20,7 +16,7 @@ const PatientSignUp = () => {
     dateOfBirth: "",
     email: "",
     gender: "",
-    address: "",
+    patientAddress: "",
     phoneNumber: "",
     bloodgroup: "",
     metaMaskAccount: metaMaskAccount,
@@ -29,22 +25,16 @@ const PatientSignUp = () => {
   });
 
   // useEffect(() => {
-  //   const fetchAccount = async () => {
-  //     if (metaMaskAccount === "Failed to Fetch Wallet Address") {
-  //       try {
-  //         const response = await axios.get(
-  //           "http://localhost:5000/api/accounts"
-  //         );
-  //         setMetaMaskAccount(
-  //           response.data.account || "Failed to Fetch Wallet Address"
-  //         );
-  //       } catch (error) {
-  //         console.error("Error fetching MetaMask account:", error);
-  //       }
+  //   const initialize = async () => {
+  //     try {
+  //       const { web3, contract } = await setupContract();
+  //       setState({ web3, contract });
+  //     } catch (error) {
+  //       console.error("Error initializing contract:", error);
   //     }
   //   };
-  //   fetchAccount();
-  // }, [metaMaskAccount]);
+  //   initialize();
+  // }, []);
 
   useEffect(() => {
     setFormData((prevFormData) => ({
@@ -68,111 +58,42 @@ const PatientSignUp = () => {
     });
   };
 
-  // const handleSubmit = async (e) => {
-  //     e.preventDefault();
-
-  //     if (!formData.metaMaskAccount || formData.metaMaskAccount === 'Failed to Fetch Wallet Address') {
-  //         alert("MetaMask account not connected.");
-  //         return;
-  //     }
-
-  //     try {
-  //         const response = await axios.post('http://localhost:5000/api/registerpatient', formData);
-
-  //         if (response.status === 200 || response.status === 201) {
-  //             alert("Registration successful!");
-  //             navigate('/Patient/viewprofile', { state: { metaMaskAccount: formData.metaMaskAccount } });
-  //         } else {
-  //             alert(response.data.message || 'Registration failed.');
-  //             console.error("Registration failed.", response.data);
-  //         }
-  //     } catch (error) {
-  //         alert(error.response?.data?.message || 'Registration error.');
-  //         console.error("Registration error:", error);
-  //     }
-  // };
-
-  // Initialize Web3
-
-  // useEffect(() => {
-  //   async function fetchContract() {
-  //     const contract = await setupContract();
-  //     setState({ web3, contract });
-  //     console.log("Created Contract Address", contract.options.address);
-  //     contract
-  //       .getPastEvents("PatientExists")
-  //       .then(function (events) {
-  //         // Process the retrieved events
-  //         console.log(events);
-  //         if (events.length > 0) {
-  //           const event = events[0];
-  //           const returnValues = event.returnValues.patient;
-  //           navigate("/Patient/viewprofile", {
-  //             state: {
-  //               metaMaskAccount: formData.metaMaskAccount,
-  //               patient: returnValues,
-  //             },
-  //           });
-  //         }
-  //       })
-  //       .catch(function (error) {
-  //         // Handle errors
-  //         console.error(error);
-  //       });
-  //   }
-
-  //   fetchContract();
-
-  // }, []);
-    
   useEffect(() => {
     const { contract } = state;
-
-    async function readData() {
-      try {
-        if (contract) {
-          const metaMaskAccount = formData.metaMaskAccount;
+    if (contract) {
+      const fetchPatientData = async () => {
+        try {
           const data = await contract.methods
-            .getPatient(metaMaskAccount)
+            .getPatient(formData.metaMaskAccount)
             .call();
-          console.log("Fetched Data Using getPatient():", data); // Print data to console
-          setData(data); // Set data in component state if needed
+          console.log("Fetched Data Using getPatient():", data);
+        } catch (error) {
+          console.error("Error fetching data:", error);
         }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        // Handle error as per your application needs
-      }
+      };
+      fetchPatientData();
     }
-
-    readData();
-  }, [state]);
+  }, [state, formData.metaMaskAccount]);
 
   useEffect(() => {
     const { contract } = state;
-
-    async function getEmail() {
-      try {
-        if (contract) {
-          const metaMaskAccount = formData.metaMaskAccount;
+    if (contract) {
+      const fetchEmail = async () => {
+        try {
           const data = await contract.methods
-            .getEmailByMetaMask(metaMaskAccount)
+            .getEmailByMetaMask(formData.metaMaskAccount)
             .call();
-          console.log("Fetched Data using getEmailByMetaMask():", data); // Print data to console
-          setData(data); // Set data in component state if needed
+          console.log("Fetched Data using getEmailByMetaMask():", data);
+        } catch (error) {
+          console.error("Error fetching data:", error);
         }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        // Handle error as per your application needs
-      }
+      };
+      fetchEmail();
     }
-
-    getEmail();
-  }, [state]);
+  }, [state, formData.metaMaskAccount]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const { web3, contract } = state; // Destructure contract from state
 
     if (
       !formData.metaMaskAccount ||
@@ -183,21 +104,16 @@ const PatientSignUp = () => {
     }
 
     try {
+      // const { web3, contract } = state;
+      const contract = await setupContract();
       if (!contract) {
         throw new Error("Contract not initialized.");
       }
 
-      // Validate and format MetaMask account address
       const metaMaskAccount = web3.utils.toChecksumAddress(
         formData.metaMaskAccount
       );
-      console.log(metaMaskAccount);
 
-      // Example: Convert numbers to BigInt
-      const gasLimit = BigInt(5000000);
-      const gasPrice = BigInt("20000000000");
-
-      // Call the smart contract function
       const transaction = await contract.methods
         .registerPatient(
           formData.firstName,
@@ -205,50 +121,56 @@ const PatientSignUp = () => {
           formData.dateOfBirth,
           formData.email,
           formData.gender,
-          formData.address,
+          formData.patientAddress,
           formData.phoneNumber,
           formData.bloodgroup,
-          metaMaskAccount, // Use formatted address here
+          metaMaskAccount,
           formData.insuranceProvider,
           formData.policyNumber
         )
         .send({
           from: metaMaskAccount,
-          gas: gasLimit,
-          gasPrice: gasPrice,
+          gas: 5000000,
+          gasPrice: "20000000000",
         });
 
       console.log("Transaction hash:", transaction.transactionHash);
 
-      contract
-        .getPastEvents("PatientExists")
-        .then(function (events) {
-          // Process the retrieved events
-          console.log(events);
-          if (events.length > 0) {
-            const event = events[0];
+      try {
+        const eventName = "PatientExists";
+        const events = await contract.getPastEvents(eventName, {
+          filter: { metaMaskAccount: formData.metaMaskAccount },
+          fromBlock: 0,
+          toBlock: 'latest'
+        });
+        console.log(events);
+        if (events.length > 0) {
+          const event = events.find(e => e.returnValues.metaMaskAccount.toLowerCase() === formData.metaMaskAccount.toLowerCase());
+          console.log(event);
+          if (event) {
             const returnValues = event.returnValues.patient;
-            navigate("/Patient/viewprofile", {
+            console.log("viewprofile");
+            navigate("/patient/viewprofile", {
               state: {
                 metaMaskAccount: formData.metaMaskAccount,
                 patient: returnValues,
               },
             });
+          } else {
+            console.error(`No matching '${eventName}' event found for account:`, formData.metaMaskAccount);
           }
-        })
-        .catch(function (error) {
-          // Handle errors
-          console.error(error);
-        });
-      // Handle successful registration
-      alert("Registration successful!");
-      // Example navigation if using react-router-dom
-      // navigate('/Patient/viewprofile', { state: { metaMaskAccount: formData.metaMaskAccount } });
-    } catch (error) {
-      // Handle errors
-      alert(error.message || "Registration error.");
-      console.error("Registration error:", error);
-    }
+        } else {
+          console.error(`No '${eventName}' event found.`);
+        }
+      } catch (error) {
+        console.error(`Error fetching '${eventName}' events:`, error.message);
+      }
+
+    // navigate('/Doctor/Viewprofile', { state: { formData } });
+} catch (error) {
+    setError(error.response?.data?.message || 'Registration error.');
+    console.error("Registration error:", error.message);
+}
   };
 
   return (
@@ -310,8 +232,8 @@ const PatientSignUp = () => {
             Address
             <input
               type="text"
-              name="address"
-              value={formData.address}
+              name="patientAddress"
+              value={formData.patientAddress}
               onChange={handleChange}
               required
             />

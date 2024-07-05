@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 import detectEthereumProvider from "@metamask/detect-provider";
 import doctorImage from "./assets/doctor-icon.png";
 import patientImage from "./assets/patient-icon.png";
-import { setupContract } from "./Ethereum/Contracts/web3";
-import { PatientContext } from './PatientContext';  // Import the context
+import { setupContract } from "./Ethereum/Contracts/web3"; // Import web3 instance and setupContract function
+import { PatientContext } from "./PatientContext";
 
 const SelectRole = () => {
   const navigate = useNavigate();
-  const { setPatientDetails, setMetaMaskAccount } = useContext(PatientContext);  // Use the context
-  const [localMetaMaskAccount, setLocalMetaMaskAccount] = useState("");
+  const [localmetaMaskAccount, setlocalMetaMaskAccount] = useState("");
+  const {setPatientDetails, setMetaMaskAccount} = useContext(PatientContext);
+  const [state, setState] = useState({ web3: null, contract: null });
 
   const connectMetaMask = async () => {
     const provider = await detectEthereumProvider();
@@ -20,71 +21,134 @@ const SelectRole = () => {
           method: "eth_requestAccounts",
         });
         const account = accounts[0];
-        setLocalMetaMaskAccount(account);
-        setMetaMaskAccount(account);  // Set the context state
+        setlocalMetaMaskAccount(account);
+        setMetaMaskAccount(account);
         return account;
       } catch (error) {
         console.error("MetaMask error:", error);
+        alert("Failed to connect MetaMask. Please try again.");
         return null;
       }
     } else {
       console.error("MetaMask not detected.");
+      alert("MetaMask not detected. Please install MetaMask and try again.");
       return null;
+    }
+  };
+
+  const registerAndRedirect = async (contract, account, role) => {
+    try {
+      // Register the account with role in the contract
+      await contract.methods.registerAccount(account, role).send({
+        from: account,
+        gas: 5000000,
+        gasPrice: "20000000000",
+      });
+
+      // Redirect based on role after registration
+      if (role === "patient") {
+        navigate("/Patient/patientsignup", {
+          state: {
+            localmetaMaskAccount: account,
+          },
+        });
+      } else {
+        navigate("/Doctor/doctorsignup", {
+          state: {
+            localmetaMaskAccount: account,
+          },
+        });
+      }
+    } catch (error) {
+      if (error.message.includes("Account already has a role registered")) {
+        alert("Account already has a role registered");
+      } else {
+        console.error("Error saving account to contract:", error.message);
+        alert("Error saving account to contract. Please try again.");
+      }
+    }
+  };
+
+  const fetchAndNavigateBasedOnRole = async (contract, account, role) => {
+    try {
+      const eventName = role === "patient" ? "PatientExists" : "DoctorExists";
+      const events = await contract.getPastEvents(eventName, {
+        filter: { localmetaMaskAccount: account },
+        fromBlock: 0,
+        toBlock: "latest",
+      });
+      console.log(events);
+      if (events.length > 0) {
+        const event = events.find(
+          (e) =>
+            e.returnValues.localmetaMaskAccount.toLowerCase() === account.toLowerCase()
+        );
+        console.log(event);
+        if (event) {
+          const returnValues = event.returnValues[role];
+          console.log(
+            `/${role === "patient" ? "Patient" : "Doctor"}/viewprofile`
+          );
+          navigate(
+            `/${role === "patient" ? "Patient" : "Doctor"}/viewprofile`,
+            {
+              state: {
+                localmetaMaskAccount: account,
+                [role]: returnValues,
+              },
+            }
+          );
+        } else {
+          console.error(
+            `No matching '${eventName}' event found for account:`,
+            account
+          );
+        }
+      } else {
+        console.error(`No '${eventName}' event found.`);
+      }
+    } catch (error) {
+      console.error(`Error fetching '${eventName}' events:`, error.message);
     }
   };
 
   const saveAccountToContract = async (account, role) => {
     try {
       const contract = await setupContract();
+      // console.log(contract);
+      if (!contract) {
+        throw new Error("Contract not initialized.");
+      }
 
       const accountInfo = await contract.methods.getAccount(account).call();
       if (accountInfo.isRegistered) {
-        if (accountInfo.role === "patient") {
-          contract
-            .getPastEvents("PatientExists")
-            .then(async function (events) {
-              if (events.length > 0) {
-                const event = events[0];
-                const returnValues = event.returnValues;
-                setPatientDetails(returnValues.patient);  // Set the context state
-                navigate("/patient/dashboard", {
-                  state: {
-                    metaMaskAccount: account,
-                    patient: returnValues.patient,
-                  },
-                });
-              } else {
-                navigate("/patient/patientsignup", {
-                  state: { metaMaskAccount: account },
-                });
-              }
-            })
-            .catch(function (error) {
-              console.error(error);
+        alert(`Account already has a registered role: ${accountInfo.role}`);
+        const hasInfo = await contract.methods.hasPersonalInfo(account).call();
+        if (!hasInfo) {
+          alert("Account does not have personal information stored.");
+          if (role === "patient") {
+            console.log(account);
+            navigate("/Patient/patientsignup", {
+              state: {
+                localmetaMaskAccount: account,
+              },
             });
-        } else {
-          console.log("Redirecting to doctor dashboard");
+          } else {
+            navigate("/Doctor/doctorsignup", {
+              state: {
+                localmetaMaskAccount: account,
+              },
+            });
+          }
+          return;
         }
-        return;
-      }
-
-      const gasLimit = BigInt(5000000);
-      const gasPrice = BigInt("20000000000");
-
-      await contract.methods
-        .registerAccount(account, role)
-        .send({ from: account, gas: gasLimit, gasPrice: gasPrice });
-      console.log("Account registered with role:", role);
-
-      if (role === "patient") {
-        navigate("/patient/patientsignup", {
-          state: { metaMaskAccount: account },
-        });
+        await fetchAndNavigateBasedOnRole(contract, account, accountInfo.role);
       } else {
-        console.log("Redirecting to doctor signup");
+        await registerAndRedirect(contract, account, role);
       }
     } catch (error) {
-      console.error("Error saving account to contract:", error);
+      console.error("Error saving account to contract:", error.message);
+      alert("Error saving account to contract. Please try again.");
     }
   };
 
@@ -104,7 +168,7 @@ const SelectRole = () => {
 
   const disconnectMetaMask = () => {
     console.log("Disconnecting MetaMask account");
-    setLocalMetaMaskAccount("");
+    setlocalMetaMaskAccount("");
     if (window.ethereum && window.ethereum.disconnect) {
       window.ethereum.disconnect();
     }
@@ -123,9 +187,9 @@ const SelectRole = () => {
           <span className="role-text">Patient</span>
         </button>
       </div>
-      {localMetaMaskAccount && (
+      {localmetaMaskAccount && (
         <div>
-          <p>Connected MetaMask Account: {localMetaMaskAccount}</p>
+          <p>Connected MetaMask Account: {localmetaMaskAccount}</p>
           <button
             onClick={disconnectMetaMask}
             style={{ backgroundColor: "red", color: "white" }}

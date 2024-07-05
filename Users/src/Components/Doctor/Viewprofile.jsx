@@ -4,27 +4,26 @@ import axios from "axios";
 
 const DoctorViewProfile = () => {
     const location = useLocation();
+    // console.log(location.state);
     const navigate = useNavigate();
     const metaMaskAccount = location.state?.metaMaskAccount;
     const [formData, setFormData] = useState(null);
 
-    useEffect(() => {
-        if (metaMaskAccount) {
-            axios.get('http://localhost:5000/api/registerdoctor', {
-                params: { metaMaskAccount },
-            })
-            .then((response) => {
-                setFormData(response.data);
-            })
-            .catch((error) => {
-                console.error(error);
-                navigate('/Patient/patientsignup');
-            });
-        } else {
-            navigate('/Patient/patientsignup');
-        }
-    }, [metaMaskAccount, navigate]);
+    // console.log(metaMaskAccount)
     
+    useEffect(() => {
+        setFormData({
+            firstName: location.state.doctor["firstName"],
+            lastName: location.state.doctor["lastName"],
+            dateOfBirth: location.state.doctor["dateOfBirth"],
+            email: location.state.doctor["email"],
+            address: location.state.doctor["doctorAddress"],
+            phoneNumber: location.state.doctor["phoneNumber"],
+            metaMaskAccount: location.state.doctor["metaMaskAccount"],
+            medicalLicenseNumber: location.state.doctor["medicalLicenseNumber"],
+            yearsOfExperience: location.state.doctor["yearsOfExperience"]
+        })
+    })
     
     if (!formData) {
         return <p>Loading...</p>;
