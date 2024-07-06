@@ -1,22 +1,58 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import '../../Components/Css/Navbar1.css';
 import logo from '../../Components/assets/Images/Navlogo.png';
 
 const PatientNavbar = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const metaMaskAccount = location.state?.metaMaskAccount;
+  const patInfo = location.state?.patient;
+
+  const gotoViewProfile = async() => {
+    navigate('/patient/viewprofile', {
+      state: {
+        metaMaskAccount: metaMaskAccount,
+        patient: patInfo
+      }
+    });
+  };
+
+  const gotoViewDoctors = async() => {
+    navigate('/patient/viewdoctors', {
+      state: {
+        metaMaskAccount: metaMaskAccount,
+        patient: patInfo
+      }
+    });
+  };
+
+  const gotoUploadFile = async() => {
+    navigate('/patient/uploadfiles', {
+      state: {
+        metaMaskAccount: metaMaskAccount,
+        patient: patInfo
+      }
+    });
+  };
+
   return (
     <nav className="navbar">
       <Link to="/" className="logoimg">
         <img src={logo} alt="logo" />
+        <div className="logoname-container">
+          <div className="logoname">
+            <span className="med">MED</span>
+            <span className="ick">ICK</span>
+          </div>
+        </div>
       </Link>
-      <Link to="/" className="logoname">MED</Link>
-      <Link to="/" className="logoname1">ICK</Link>
       <ul className="nav-links">
-        <li><Link to="/patient/dashboard/viewprofile">View Profile</Link></li>
-        <li><Link to="/patient/dashboard/viewdoctors">View Doctors</Link></li>
-        <li><Link to="/patient/dashboard/upload">Upload Files</Link></li>
+        <li><button className="button-2" onClick={gotoViewProfile}>View Profile</button></li>
+        <li><button className="button-2" onClick={gotoViewDoctors}>View Doctors</button></li>
+        <li><button className="button-2" onClick={gotoUploadFile}>Upload Files</button></li>
       </ul>
-      <Link to="/" className="button-57">Logout</Link> {/* Added Home button */}
+      <Link to="/" className="button-5">Logout</Link>
     </nav>
   );
 };

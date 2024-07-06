@@ -8,45 +8,10 @@ import PatientViewProfile from './viewprofile';
 import { useLocation } from 'react-router-dom';
 
 const PaientDashboard = () => {
-  const location = useLocation();
-    const navigate = useNavigate();
-    const metaMaskAccount = location.state?.metaMaskAccount;
-    const patInfo = location.state?.patient;
-    // const [formData, setFormData] = useState(null);
-
-    const gotoViewProfile = async() => {
-        navigate('/Patient/viewprofile', {
-            state: {
-                metaMaskAccount: metaMaskAccount,
-                patient: patInfo
-            }
-        })
-    }
-
-    const gotoViewDoctors = async() => {
-      navigate('/Patient/ViewDoctors', {
-          state: {
-              metaMaskAccount: metaMaskAccount,
-              patient: patInfo
-          }
-      })
-  }
-
-  const gotoUploadFile = async() => {
-    navigate('/Patient/UploadFiles', {
-      state: {
-          metaMaskAccount: metaMaskAccount,
-          patient: patInfo
-      }
-  })
-  }
-
 
   return (
     <>
-       <button onClick={gotoViewProfile}>ViewProfile</button>
-       <button onClick={gotoViewDoctors}>ViewDoctors</button>
-       <button onClick={gotoUploadFile}>UploadFile</button>
+    <PatientNavbar/>
     </>
   );
 };

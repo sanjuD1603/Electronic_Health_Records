@@ -5,7 +5,7 @@ import doctorImage from "./assets/doctor-icon.png";
 import patientImage from "./assets/patient-icon.png";
 import { setupContract } from "./Ethereum/Contracts/web3"; // Import web3 instance and setupContract function
 import { PatientContext } from "./PatientContext";
-
+import '../Components/assets/selectrole.css'
 const SelectRole = () => {
   const navigate = useNavigate();
   const [metaMaskAccount, setmetaMaskAccount] = useState("");
