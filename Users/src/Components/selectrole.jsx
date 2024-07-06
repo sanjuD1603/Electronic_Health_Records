@@ -4,12 +4,12 @@ import detectEthereumProvider from "@metamask/detect-provider";
 import doctorImage from "./assets/doctor-icon.png";
 import patientImage from "./assets/patient-icon.png";
 import { setupContract } from "./Ethereum/Contracts/web3"; // Import web3 instance and setupContract function
-import { PatientContext } from "./PatientContext";
+// import { PatientContext } from "./PatientContext";
 
 const SelectRole = () => {
   const navigate = useNavigate();
   const [metaMaskAccount, setmetaMaskAccount] = useState("");
-  const { setPatientDetails, setMetaMaskAccount } = useContext(PatientContext);
+  // const { setPatientDetails, setMetaMaskAccount } = useContext(PatientContext);
   const [state, setState] = useState({ web3: null, contract: null });
 
   const connectMetaMask = async () => {
@@ -22,7 +22,7 @@ const SelectRole = () => {
         });
         const account = accounts[0];
         setmetaMaskAccount(account);
-        setMetaMaskAccount(account);
+        // setMetaMaskAccount(account);
         return account;
       } catch (error) {
         console.error("MetaMask error:", error);
@@ -39,12 +39,17 @@ const SelectRole = () => {
   const registerAndRedirect = async (contract, account, role) => {
     try {
       // Register the account with role in the contract
-      await contract.methods.registerAccount(account, role).send({
-        from: account,
-        gas: 5000000,
-        gasPrice: "20000000000",
-      });
-
+      const transaction = await contract.methods
+        .registerAccount(account, role)
+        .send({
+          from: account,
+          gas: 5000000,
+          gasPrice: "20000000000",
+        });
+      console.log(
+        "Account Created successfully at: ",
+        transaction.transactionHash
+      );
       // Redirect based on role after registration
       if (role === "patient") {
         navigate("/Patient/patientsignup", {
@@ -86,15 +91,12 @@ const SelectRole = () => {
         );
         if (event) {
           const returnValues = event.returnValues[role];
-          navigate(
-            `/${role === "patient" ? "Patient" : "Doctor"}/Dashboard`,
-            {
-              state: {
-                metaMaskAccount: account,
-                [role]: returnValues,
-              },
-            }
-          );
+          navigate(`/${role === "patient" ? "Patient" : "Doctor"}/Dashboard`, {
+            state: {
+              metaMaskAccount: account,
+              [role]: returnValues,
+            },
+          });
         } else {
           console.error(
             `No matching '${eventName}' event found for account:`,

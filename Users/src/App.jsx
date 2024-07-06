@@ -11,6 +11,7 @@ import ViewDoctors from './Components/Patient/ViewDoctors';
   import DoctorCard from './Components/Patient/DisplayDoctors/DoctorCard';
   import DoctorDetails from './Components/Patient/DisplayDoctors/DoctorDetails';
   import DoctorGrid from './Components/Patient/DisplayDoctors/DoctorGrid';
+  import { PatientProvider } from './Components/Patient/DisplayDoctors/PatientContext'; // Import PatientProvider
 
 import UploadFiles from './Components/Patient/UploadFiles';
 
@@ -20,7 +21,6 @@ import DoctorViewProfile from './Components/Doctor/Viewprofile';
 import DoctorDashBoard  from './Components/Doctor/Dashboard';
 import ViewPatients from './Components/Doctor/ViewPatients';
 import DocUploadFiles from './Components/Doctor/UploadFiles';
-import { PatientProvider } from './Components/PatientContext'; // Import PatientProvider
 
 // import './App.css';
 
