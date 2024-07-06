@@ -10,6 +10,7 @@ const DoctorDetails = () => {
   const { patientInfo } = usePatientContext();
 
   const doctorAddress = doctor.metaMaskAccount;
+  console.log(doctor)
   const patientAddress = patientInfo.metaMaskAccount;
 
   const [showForm, setShowForm] = useState(false);
