@@ -16,13 +16,7 @@ const DoctorDetails = () => {
   const [doctorMeetings, setDoctorMeetings] = useState([]);
   const [patientMeetings, setPatientMeetings] = useState([]);
   const [doctorLookup, setDoctorLookup] = useState({});
-
-  // Create a lookup object for patientInfo
-  const patientLookup = {};
-  Object.keys(patientInfo).forEach(key => {
-    const patient = patientInfo[key];
-    patientLookup[patient.metaMaskAccount] = patient;
-  });
+  const [patientLookup, setPatientLookup] = useState({});
 
   useEffect(() => {
     const fetchDoctorMeetings = async () => {
@@ -62,12 +56,12 @@ const DoctorDetails = () => {
     const fetchDoctors = async () => {
       const contract = await setupContract();
       try {
-        const events = await contract.getPastEvents('DoctorExists', {
+        const events = await contract.getPastEvents("DoctorExists", {
           fromBlock: 0,
-          toBlock: 'latest'
+          toBlock: "latest",
         });
         const doctorData = {};
-        events.forEach(event => {
+        events.forEach((event) => {
           const doctorInfo = event.returnValues;
           doctorData[doctorInfo.metaMaskAccount] = doctorInfo;
         });
@@ -79,6 +73,29 @@ const DoctorDetails = () => {
     };
 
     fetchDoctors();
+  }, []);
+
+  useEffect(() => {
+    const fetchPatients = async () => {
+      const contract = await setupContract();
+      try {
+        const events = await contract.getPastEvents("PatientExists", {
+          fromBlock: 0,
+          toBlock: "latest",
+        });
+        const patientData = {};
+        events.forEach((event) => {
+          const patientInfo = event.returnValues;
+          patientData[patientInfo.metaMaskAccount] = patientInfo;
+        });
+        setPatientLookup(patientData);
+        console.log("Patient Lookup:", patientData);
+      } catch (error) {
+        console.error("Error fetching patients:", error);
+      }
+    };
+
+    fetchPatients();
   }, []);
 
   const AppointmentForm = ({ onSubmit }) => {
@@ -146,7 +163,9 @@ const DoctorDetails = () => {
   const handleClearAllMeetings = async () => {
     const contract = await setupContract();
     try {
-      await contract.methods.clearAllMeetings().send({ from: patientAddress, gas: 5000000, gasPrice: "20000000000" });
+      await contract.methods
+        .clearAllMeetings()
+        .send({ from: patientAddress, gas: 5000000, gasPrice: "20000000000" });
       console.log("All meetings cleared successfully!");
       // Update state after clearing meetings
       setDoctorMeetings([]);
@@ -205,26 +224,36 @@ const DoctorDetails = () => {
 
       <h2>Doctor's Meetings</h2>
       <ul>
-        {doctorMeetings.map((meeting, index) => (
-          <li key={index}>
-            <p>Patient Name: {patientLookup[meeting.patientAddress]?.firstName} {patientLookup[meeting.patientAddress]?.lastName}</p>
-            <p>Meeting Description: {meeting.meetingDescription}</p>
-            <p>
-              Meeting Time:{" "}
-              {new Date(Number(meeting.meetingTime) * 1000).toLocaleString()}
-            </p>
-          </li>
-        ))}
+        {doctorMeetings.map((meeting, index) => {
+          console.log("PatientLookUp: ", patientLookup);
+          return (
+            <li key={index}>
+              <p>
+                Patient Name: {patientLookup[meeting.patientAddress].patient?.firstName}{" "}
+                {patientLookup[meeting.patientAddress].patient?.lastName}
+              </p>
+              <p>Meeting Description: {meeting.meetingDescription}</p>
+              <p>
+                Meeting Time:{" "}
+                {new Date(Number(meeting.meetingTime) * 1000).toLocaleString()}
+              </p>
+            </li>
+          );
+        })}
       </ul>
 
       <h2>Patient's Meetings</h2>
       <ul>
         {patientMeetings.map((meeting, index) => {
-          console.log("Meeting Doctor Address:", meeting.doctorAddress);
-          console.log("Doctor Info:", doctorLookup[meeting.doctorAddress]);
+          // console.log("Meeting Doctor Address:", meeting.doctorAddress);
+          // console.log("Doctor Info:", doctorLookup[meeting.doctorAddress]);
           return (
             <li key={index}>
-              <p>Doctor Name: Dr. {doctorLookup[meeting.doctorAddress].doctor?.firstName} {doctorLookup[meeting.doctorAddress].doctor?.lastName}</p>
+              <p>
+                Doctor Name: Dr.{" "}
+                {doctorLookup[meeting.doctorAddress].doctor?.firstName}{" "}
+                {doctorLookup[meeting.doctorAddress].doctor?.lastName}
+              </p>
               <p>Meeting Description: {meeting.meetingDescription}</p>
               <p>
                 Meeting Time:{" "}
