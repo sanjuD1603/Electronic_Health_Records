@@ -7,7 +7,7 @@ const UploadFiles = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
-  console.log(location.state);
+  // console.log(location.state);
 
   const [file, setFile] = useState(null);
   const [uploadStatus, setUploadStatus] = useState([]);

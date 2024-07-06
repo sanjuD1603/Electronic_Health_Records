@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
+// Smart contract
 contract HealthSystem {
     struct Patient {
         string firstName;
@@ -35,6 +36,69 @@ contract HealthSystem {
         bool isRegistered;
     }
 
+    struct Meeting {
+        address patientAddress;
+        address doctorAddress;
+        uint256 meetingTime;
+        string meetingDescription;
+    }
+
+    Meeting[] public meetings;
+
+    function createMeeting(
+        address _patientAddress,
+        address _doctorAddress,
+        string memory _meetingDescription,
+        uint256 _meetingTime
+    ) public {
+        meetings.push(
+            Meeting({
+                patientAddress: _patientAddress,
+                doctorAddress: _doctorAddress,
+                meetingTime: _meetingTime,
+                meetingDescription: _meetingDescription
+            })
+        );
+    }
+
+    function getPatientMeetings(
+        address _patientAddress
+    ) public view returns (Meeting[] memory) {
+        Meeting[] memory patientMeetings = new Meeting[](meetings.length);
+        uint256 count = 0;
+
+        for (uint256 i = 0; i < meetings.length; i++) {
+            if (meetings[i].patientAddress == _patientAddress) {
+                patientMeetings[count] = meetings[i];
+                count++;
+            }
+        }
+
+        assembly {
+            mstore(patientMeetings, count)
+        }
+        return patientMeetings;
+    }
+
+    function getDoctorMeetings(
+        address _doctorAddress
+    ) public view returns (Meeting[] memory) {
+        Meeting[] memory doctorMeetings = new Meeting[](meetings.length);
+        uint256 count = 0;
+
+        for (uint256 i = 0; i < meetings.length; i++) {
+            if (meetings[i].doctorAddress == _doctorAddress) {
+                doctorMeetings[count] = meetings[i];
+                count++;
+            }
+        }
+
+        assembly {
+            mstore(doctorMeetings, count)
+        }
+        return doctorMeetings;
+    }
+
     mapping(address => string) public metaMaskToEmail;
     mapping(address => Patient) public patients;
     mapping(address => Doctor) public doctors;
@@ -48,7 +112,10 @@ contract HealthSystem {
     event AccountExists(address indexed metaMaskAccount, Account account);
 
     modifier onlyRegisteredAccount(address _metaMaskAccount) {
-        require(accounts[_metaMaskAccount].isRegistered, "Account is not registered");
+        require(
+            accounts[_metaMaskAccount].isRegistered,
+            "Account is not registered"
+        );
         _;
     }
 
@@ -122,7 +189,10 @@ contract HealthSystem {
         emit DoctorExists(_metaMaskAccount, doctors[_metaMaskAccount]);
     }
 
-    function registerAccount(address _metaMaskAccount, string memory _role) public {
+    function registerAccount(
+        address _metaMaskAccount,
+        string memory _role
+    ) public {
         // Check if the account already has a role registered
         if (accounts[_metaMaskAccount].isRegistered) {
             revert("Account already has a role registered");
@@ -140,32 +210,50 @@ contract HealthSystem {
         emit AccountExists(_metaMaskAccount, accounts[_metaMaskAccount]);
     }
 
-    function getPatient(address _metaMaskAccount) public view returns (Patient memory) {
+    function getPatient(
+        address _metaMaskAccount
+    ) public view returns (Patient memory) {
         return patients[_metaMaskAccount];
     }
 
-    function getDoctor(address _metaMaskAccount) public view returns (Doctor memory) {
+    function getDoctor(
+        address _metaMaskAccount
+    ) public view returns (Doctor memory) {
         return doctors[_metaMaskAccount];
     }
 
-    function getEmailByMetaMask(address _metaMaskAccount) public view returns (string memory) {
+    function getEmailByMetaMask(
+        address _metaMaskAccount
+    ) public view returns (string memory) {
         return metaMaskToEmail[_metaMaskAccount];
     }
 
-    function getAccount(address _metaMaskAccount) public view returns (Account memory) {
+    function getAccount(
+        address _metaMaskAccount
+    ) public view returns (Account memory) {
         return accounts[_metaMaskAccount];
     }
 
-    function hasPersonalInfo(address _metaMaskAccount) public view returns (bool) {
+    function hasPersonalInfo(
+        address _metaMaskAccount
+    ) public view returns (bool) {
         Patient memory patient = patients[_metaMaskAccount];
         Doctor memory doctor = doctors[_metaMaskAccount];
-        if (bytes(patient.firstName).length > 0 || bytes(doctor.firstName).length > 0) {
+        if (
+            bytes(patient.firstName).length > 0 ||
+            bytes(doctor.firstName).length > 0
+        ) {
             return true;
         }
         return false;
     }
 
-    function performAction(address _metaMaskAccount) public view onlyRegisteredAccount(_metaMaskAccount) {
-        require(hasPersonalInfo(_metaMaskAccount), "Account does not have personal info stored");
+    function performAction(
+        address _metaMaskAccount
+    ) public view onlyRegisteredAccount(_metaMaskAccount) {
+        require(
+            hasPersonalInfo(_metaMaskAccount),
+            "Account does not have personal info stored"
+        );
     }
 }

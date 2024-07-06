@@ -4,10 +4,10 @@ import axios from "axios";
 import { web3, setupContract } from "../Ethereum/Contracts/web3";
 
 const PatientViewProfile = () => {
-  console.log("Patient view Profile");
+  // console.log("Patient view Profile");
   const location = useLocation();
   const navigate = useNavigate();
-  console.log(location.state)
+  // console.log(location.state)
   const metaMaskAccount = location.state?.metaMaskAccount;
   // console.log(metaMaskAccount);
   // console.log(location.state.patient);

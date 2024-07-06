@@ -7,9 +7,9 @@ const DoctorSignUp = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    console.log(location.state);
+    // console.log(location.state);
 
-    const [metaMaskAccount, setMetaMaskAccount] = useState(location.state?.localmetaMaskAccount || "Failed to Fetch Wallet Address");
+    const [metaMaskAccount, setMetaMaskAccount] = useState(location.state?.metaMaskAccount || "Failed to Fetch Wallet Address");
     const [error, setError] = useState(null);
     const [state, setState] = useState({ web3: null, contract: null });
     const [success, setSuccess] = useState(null);
@@ -99,10 +99,10 @@ const DoctorSignUp = () => {
                     fromBlock: 0,
                     toBlock: 'latest'
                   });
-                  console.log(events);
+                //   console.log(events);
                   if (events.length > 0) {
                     const event = events.find(e => e.returnValues.metaMaskAccount.toLowerCase() === formData.metaMaskAccount.toLowerCase());
-                    console.log(event);
+                    // console.log(event);
                     if (event) {
                       const returnValues = event.returnValues.doctor;
                     //   console.log("/Viewprofile");
