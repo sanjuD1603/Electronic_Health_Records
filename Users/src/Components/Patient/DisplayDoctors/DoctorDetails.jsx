@@ -131,7 +131,10 @@ const DoctorDetails = () => {
         )
         .send({ from: patientAddress, gas: 5000000, gasPrice: "20000000000" });
       console.log("Meeting created successfully!");
-      // Redirect or show confirmation message after booking
+
+      // Refresh meetings data after booking
+      fetchDoctorMeetings();
+      fetchPatientMeetings();
     } catch (error) {
       console.error("Error creating meeting:", error.message);
     }
@@ -150,6 +153,32 @@ const DoctorDetails = () => {
       setPatientMeetings([]);
     } catch (error) {
       console.error("Error clearing all meetings:", error);
+    }
+  };
+
+  const fetchDoctorMeetings = async () => {
+    const contract = await setupContract();
+    try {
+      const docMeetings = await contract.methods
+        .getDoctorMeetings(doctorAddress)
+        .call();
+      setDoctorMeetings(docMeetings);
+      console.log("Doctor Meetings:", docMeetings);
+    } catch (error) {
+      console.error("Error fetching doctor meetings:", error);
+    }
+  };
+
+  const fetchPatientMeetings = async () => {
+    const contract = await setupContract();
+    try {
+      const patMeetings = await contract.methods
+        .getPatientMeetings(patientAddress)
+        .call();
+      setPatientMeetings(patMeetings);
+      console.log("Patient Meetings:", patMeetings);
+    } catch (error) {
+      console.error("Error fetching patient meetings:", error);
     }
   };
 
@@ -193,7 +222,6 @@ const DoctorDetails = () => {
         {patientMeetings.map((meeting, index) => {
           console.log("Meeting Doctor Address:", meeting.doctorAddress);
           console.log("Doctor Info:", doctorLookup[meeting.doctorAddress]);
-          console.log("DoctorLookUp --- : ", doctorLookup[meeting.doctorAddress].doctor?.firstName)
           return (
             <li key={index}>
               <p>Doctor Name: Dr. {doctorLookup[meeting.doctorAddress].doctor?.firstName} {doctorLookup[meeting.doctorAddress].doctor?.lastName}</p>
