@@ -64,6 +64,7 @@ const ViewDoctors = () => {
 
   return (
     <div>
+      <PatientNavbar/>
       <h1>View Doctors</h1>
       <DoctorGrid doctors={doctors} />
     </div>
