@@ -12,12 +12,17 @@ const DoctorDetails = () => {
   const doctorAddress = doctor.metaMaskAccount;
   const patientAddress = patientInfo.metaMaskAccount;
 
-  const PatientInfo = patientInfo.patInfo;
-  // console.log(PatientInfo);
-
   const [showForm, setShowForm] = useState(false);
   const [doctorMeetings, setDoctorMeetings] = useState([]);
   const [patientMeetings, setPatientMeetings] = useState([]);
+  const [doctorLookup, setDoctorLookup] = useState({});
+
+  // Create a lookup object for patientInfo
+  const patientLookup = {};
+  Object.keys(patientInfo).forEach(key => {
+    const patient = patientInfo[key];
+    patientLookup[patient.metaMaskAccount] = patient;
+  });
 
   useEffect(() => {
     const fetchDoctorMeetings = async () => {
@@ -52,6 +57,29 @@ const DoctorDetails = () => {
 
     fetchPatientMeetings();
   }, [patientAddress]);
+
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      const contract = await setupContract();
+      try {
+        const events = await contract.getPastEvents('DoctorExists', {
+          fromBlock: 0,
+          toBlock: 'latest'
+        });
+        const doctorData = {};
+        events.forEach(event => {
+          const doctorInfo = event.returnValues;
+          doctorData[doctorInfo.metaMaskAccount] = doctorInfo;
+        });
+        setDoctorLookup(doctorData);
+        console.log("Doctor Lookup:", doctorData);
+      } catch (error) {
+        console.error("Error fetching doctors:", error);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
 
   const AppointmentForm = ({ onSubmit }) => {
     const [meetingDescription, setMeetingDescription] = useState("");
@@ -113,16 +141,16 @@ const DoctorDetails = () => {
   };
 
   const handleClearAllMeetings = async () => {
-    // const contract = await setupContract();
-    // try {
-    //   await contract.methods.clearAllMeetings().send({ from: patientAddress, gas: 5000000, gasPrice: "20000000000" });
-    //   console.log("All meetings cleared successfully!");
-    //   // Update state after clearing meetings
-    //   setDoctorMeetings([]);
-    //   setPatientMeetings([]);
-    // } catch (error) {
-    //   console.error("Error clearing all meetings:", error);
-    // }
+    const contract = await setupContract();
+    try {
+      await contract.methods.clearAllMeetings().send({ from: patientAddress, gas: 5000000, gasPrice: "20000000000" });
+      console.log("All meetings cleared successfully!");
+      // Update state after clearing meetings
+      setDoctorMeetings([]);
+      setPatientMeetings([]);
+    } catch (error) {
+      console.error("Error clearing all meetings:", error);
+    }
   };
 
   return (
@@ -150,7 +178,7 @@ const DoctorDetails = () => {
       <ul>
         {doctorMeetings.map((meeting, index) => (
           <li key={index}>
-            <p>Patient Name: {PatientInfo[meeting.patientAddress]?.firstName} {PatientInfo[meeting.patientAddress]?.lastName}</p>
+            <p>Patient Name: {patientLookup[meeting.patientAddress]?.firstName} {patientLookup[meeting.patientAddress]?.lastName}</p>
             <p>Meeting Description: {meeting.meetingDescription}</p>
             <p>
               Meeting Time:{" "}
@@ -162,16 +190,21 @@ const DoctorDetails = () => {
 
       <h2>Patient's Meetings</h2>
       <ul>
-        {patientMeetings.map((meeting, index) => (
-          <li key={index}>
-            <p>Doctor Name: Dr. {doctor.firstName} {doctor.lastName}</p>
-            <p>Meeting Description: {meeting.meetingDescription}</p>
-            <p>
-              Meeting Time:{" "}
-              {new Date(Number(meeting.meetingTime) * 1000).toLocaleString()}
-            </p>
-          </li>
-        ))}
+        {patientMeetings.map((meeting, index) => {
+          console.log("Meeting Doctor Address:", meeting.doctorAddress);
+          console.log("Doctor Info:", doctorLookup[meeting.doctorAddress]);
+          console.log("DoctorLookUp --- : ", doctorLookup[meeting.doctorAddress].doctor?.firstName)
+          return (
+            <li key={index}>
+              <p>Doctor Name: Dr. {doctorLookup[meeting.doctorAddress].doctor?.firstName} {doctorLookup[meeting.doctorAddress].doctor?.lastName}</p>
+              <p>Meeting Description: {meeting.meetingDescription}</p>
+              <p>
+                Meeting Time:{" "}
+                {new Date(Number(meeting.meetingTime) * 1000).toLocaleString()}
+              </p>
+            </li>
+          );
+        })}
       </ul>
     </>
   );
