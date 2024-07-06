@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { setupContract } from "../Ethereum/Contracts/web3";
 import web3 from "web3";
+import "../Css/style.css"
+
 const PatientSignUp = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -66,7 +68,7 @@ const PatientSignUp = () => {
           const data = await contract.methods
             .getPatient(formData.metaMaskAccount)
             .call();
-          console.log("Fetched Data Using getPatient():", data);
+          // console.log("Fetched Data Using getPatient():", data);
         } catch (error) {
           console.error("Error fetching data:", error);
         }
@@ -83,7 +85,7 @@ const PatientSignUp = () => {
           const data = await contract.methods
             .getEmailByMetaMask(formData.metaMaskAccount)
             .call();
-          console.log("Fetched Data using getEmailByMetaMask():", data);
+          // console.log("Fetched Data using getEmailByMetaMask():", data);
         } catch (error) {
           console.error("Error fetching data:", error);
         }
@@ -134,7 +136,7 @@ const PatientSignUp = () => {
           gasPrice: "20000000000",
         });
 
-      console.log("Transaction hash:", transaction.transactionHash);
+      // console.log("Transaction hash:", transaction.transactionHash);
 
       try {
         const eventName = "PatientExists";
@@ -143,13 +145,13 @@ const PatientSignUp = () => {
           fromBlock: 0,
           toBlock: 'latest'
         });
-        console.log(events);
+        // console.log(events);
         if (events.length > 0) {
           const event = events.find(e => e.returnValues.metaMaskAccount.toLowerCase() === formData.metaMaskAccount.toLowerCase());
-          console.log(event);
+          // console.log(event);
           if (event) {
             const returnValues = event.returnValues.patient;
-            console.log("viewprofile");
+            // console.log("viewprofile");
             navigate("/patient/Dashboard", {
               state: {
                 metaMaskAccount: formData.metaMaskAccount,
