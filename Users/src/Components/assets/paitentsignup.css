@@ -1,49 +1,84 @@
 #signup-form {
-    max-width: 360px; /* Decreased max-width */
-    margin: 130px auto; /* Increased margin for distance from top navbar */
-    padding: 15px; /* Decreased padding */
-    border-radius: 8px; /* Adjusted border-radius */
+    max-width: 800px; /* Increased max-width for better division */
+    margin: 160px auto;
+    padding: 60px 20px; /* Increased padding for oval shape */
+    border-radius: 50px / 25px; /* Adjusted border-radius for oval shape */
+    box-shadow: 0 8px 16px rgba(63, 139, 214, 0.2); /* Increased shadow visibility and changed color */
+    background-color: #ffffff; /* Added background color for better visibility */
+}
 
-  
+#signup-form .meta-mask-account {
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-size: 18px; /* Increased font size */
+    color: #333;
+    text-align: center; /* Center aligned text */
 }
 
 #signup-form form {
     display: flex;
+    flex-wrap: wrap; /* Allows wrapping of form elements */
+    justify-content: space-between; /* Space between the columns */
+}
+
+#signup-form .form-column {
+    display: flex;
     flex-direction: column;
+    width: 46%; /* Adjust the width for closer columns */
 }
 
 #signup-form label {
-    margin-bottom: 8px; /* Decreased margin bottom for labels */
-    font-weight: bold; /* Added bold font weight to labels */
+    margin-bottom: 8px;
+    font-weight: bold;
 }
 
 #signup-form input[type="text"],
 #signup-form input[type="date"],
 #signup-form input[type="email"],
 #signup-form input[type="tel"],
+#signup-form select,
 #signup-form button[type="submit"],
 #signup-form button[type="button"] {
-    width: calc(100% - 16px); /* Adjusted width to accommodate border width */
-    padding: 12px; /* Increased padding for inputs */
-    margin-bottom: 12px; /* Decreased margin bottom for inputs */
-    border: 1px solid #ccc;
-    border-radius: 20px; /* Increased border-radius for more curved edges */
-    font-size: 14px; /* Decreased font size */
-    padding-left: 8px; /* Added left padding for input fields */
-    box-sizing: border-box; /* Ensures padding doesn't affect overall width */
+    width: 100%;
+    padding: 8px; /* Decreased padding */
+    margin-bottom: 12px;
+    border: 1px solid #e3e3e3;
+    border-radius: 20px;
+    font-size: 16px; /* Decreased font size */
+    padding-left: 8px;
+    box-sizing: border-box;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Added shadow to input fields */
+    transition: box-shadow 0.3s ease; /* Smooth transition for shadow effects */
+}
+
+#signup-form input[type="text"]:focus,
+#signup-form input[type="date"]:focus,
+#signup-form input[type="email"]:focus,
+#signup-form input[type="tel"]:focus,
+#signup-form select:focus {
+    box-shadow: 0 4px 8px rgba(63, 139, 214, 0.6); /* Increased shadow on focus with darker blue color */
+    outline: none; /* Removed default focus outline */
+}
+
+.button-57-wrapper {
+    width: 200px; /* Set the desired width for the button */
+    margin: 20px 0px;
+    position: relative;
+    left: 230px; /* Center the button */
 }
 
 .button-57 {
     background-color: #0078d0;
     border: 0;
-    border-radius: 56px;
+    border-radius: 20px; /* Matching border-radius of input fields */
     color: #fff;
     cursor: pointer;
+    display: block;
     font-family: system-ui, -apple-system, system-ui, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
-    font-size: 18px;
+    font-size: 16px; /* Matching font size of input fields */
     font-weight: 600;
     outline: 0;
-    padding: 16px 21px;
+    padding: 30px; /* Matching padding of input fields */
     text-align: center;
     text-decoration: none;
     transition: all 0.3s;
@@ -51,20 +86,21 @@
     -webkit-user-select: none;
     touch-action: manipulation;
     overflow: hidden;
-    display: inline-block; /* Ensures button is inline */
+    width: 100%; /* Ensure the button fills the wrapper */
 }
 
 .button-57:before {
+    background-color: initial;
+    background-image: linear-gradient(#fff 0, rgba(255, 255, 255, 0) 100%);
+    border-radius: 20px; /* Matching border-radius of button */
     content: "";
+    height: 50%;
+    left: 4%;
+    opacity: 0.5;
     position: absolute;
     top: 0;
-    left: 4%;
-    width: 92%;
-    height: 50%;
-    border-radius: 125px;
-    background-image: linear-gradient(#fff 0, rgba(255, 255, 255, 0) 100%);
-    opacity: 0.5;
     transition: all 0.3s;
+    width: 92%;
 }
 
 .button-57:hover {
@@ -72,8 +108,16 @@
     transform: scale(1.05);
 }
 
-@media (min-width: 768px) {
+@media (max-width: 768px) {
     #signup-form {
-        padding: 10px;
+        padding: 20px; /* Adjusted padding for smaller screens */
+    }
+    
+    #signup-form .form-column {
+        width: 100%; /* Full width for smaller screens */
+    }
+    
+    .button-57-wrapper {
+        width: 100%; /* Full width for smaller screens */
     }
 }

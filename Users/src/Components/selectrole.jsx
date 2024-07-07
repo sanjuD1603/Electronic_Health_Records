@@ -5,7 +5,7 @@ import doctorImage from "./assets/doctor-icon.png";
 import patientImage from "./assets/patient-icon.png";
 import { setupContract } from "./Ethereum/Contracts/web3"; // Import web3 instance and setupContract function
 import '../Components/assets/selectrole.css';
-
+import Navbar from "./Navbar"
 const SelectRole = () => {
   const navigate = useNavigate();
   const [metaMaskAccount, setMetaMaskAccount] = useState("");
@@ -172,6 +172,8 @@ const SelectRole = () => {
   };
 
   return (
+    <>
+    <Navbar/>
     <div className="select-role">
       <h1>⚕️ Select Your Role ⚕️</h1>
       <div className="role-buttons">
@@ -196,6 +198,8 @@ const SelectRole = () => {
         </div>
       )}
     </div>
+    </>
+    
   );
 };
 

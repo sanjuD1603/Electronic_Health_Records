@@ -28,7 +28,7 @@ function App() {
   return (
     <PatientProvider>
       <div>
-         <Navbar /> 
+       
         <Routes>
           {/* Src Directory */}
           <Route path="/" element={<Home />} />

@@ -4,15 +4,14 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { setupContract } from "../Ethereum/Contracts/web3";
 import DoctorGrid from "./DisplayDoctors/DoctorGrid";
 import { usePatientContext } from "./DisplayDoctors/PatientContext";
-import "./DisplayDoctors/css/DoctorGrid.css";
-import "./DisplayDoctors/css/DoctorCard.css";
+
 
 const ViewDoctors = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { setPatientInfo } = usePatientContext(); // Use context to set patient info
   const [doctors, setDoctors] = useState([]);
-
+console.log(location.state)
   useEffect(() => {
     const metaMaskAccount = location.state.metaMaskAccount;
     const patInfo = location.state.patient;
