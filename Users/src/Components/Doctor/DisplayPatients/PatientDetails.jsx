@@ -65,30 +65,37 @@ const PatientDetails = () => {
     const provider = await detectEthereumProvider();
 
     if (provider) {
-        const accounts = await provider.request({
-          method: "eth_requestAccounts",
-        });
-        const currentAccount = accounts[0];
-        console.log("Current account:", currentAccount);
-        console.log("Doctor's account:", doctorAddress);
-    
-        if (currentAccount.toLowerCase() !== doctorAddress.toLowerCase()) {
-          console.error("Current account is not the doctor.");
-      }
-      return;
-    }
+      const accounts = await provider.request({
+        method: "eth_requestAccounts",
+      });
+      const currentAccount = accounts[0];
+      console.log("Current account:", currentAccount);
+      console.log("Doctor's account:", doctorAddress);
 
-    try {
-      await contract.methods
-        .acceptMeeting(meetingIndex)
-        .send({ from: doctorAddress, gas: 5000000, gasPrice: "20000000000" });
-      console.log("Meeting accepted successfully!");
-      fetchDoctorMeetings();
-    } catch (error) {
-      console.error("Error accepting meeting:", error.message);
-      if (error.message.includes('revert')) {
-        console.error("Revert reason:", error.message);
+      if (currentAccount.toLowerCase() !== doctorAddress.toLowerCase()) {
+        console.error("Current account is not the doctor.");
+        return;
       }
+
+      try {
+        await contract.methods
+          .acceptMeeting(meetingIndex)
+          .send({ from: doctorAddress, gas: 5000000, gasPrice: "20000000000" })
+          .on('receipt', receipt => {
+            console.log('Transaction receipt:', receipt);
+            fetchDoctorMeetings(); // Refresh the meetings data
+          })
+          .on('error', error => {
+            console.error('Error accepting meeting:', error);
+          });
+      } catch (error) {
+        console.error("Error accepting meeting:", error.message);
+        if (error.message.includes('revert')) {
+          console.error("Revert reason:", error.message);
+        }
+      }
+    } else {
+      console.error("Ethereum provider not found.");
     }
   };
 
@@ -108,9 +115,14 @@ const PatientDetails = () => {
     try {
       await contract.methods
         .rejectMeeting(meetingIndex)
-        .send({ from: doctorAddress, gas: 5000000, gasPrice: "20000000000" });
-      console.log("Meeting rejected successfully!");
-      fetchDoctorMeetings();
+        .send({ from: doctorAddress, gas: 5000000, gasPrice: "20000000000" })
+        .on('receipt', receipt => {
+          console.log('Transaction receipt:', receipt);
+          fetchDoctorMeetings(); // Refresh the meetings data
+        })
+        .on('error', error => {
+          console.error('Error rejecting meeting:', error);
+        });
     } catch (error) {
       console.error("Error rejecting meeting:", error.message);
       if (error.message.includes('revert')) {
@@ -121,7 +133,7 @@ const PatientDetails = () => {
 
   return (
     <>
-      {/* <DoctorNavbar /> */}
+      <DoctorNavbar />
       <div className="container">
         <div className="doctor-details">
           <h1>
@@ -153,8 +165,8 @@ const PatientDetails = () => {
           {doctorMeetings.map((meeting, index) => (
             <tr key={index}>
               <td>
-                {patientLookup[meeting.patientAddress]?.firstName}{" "}
-                {patientLookup[meeting.patientAddress]?.lastName}
+                {patientLookup[meeting.patientAddress].patient?.firstName}{" "}
+                {patientLookup[meeting.patientAddress].patient?.lastName}
               </td>
               <td>{meeting.meetingDescription}</td>
               <td>
