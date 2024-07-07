@@ -1,0 +1,124 @@
+#signup-form {
+    max-width: 800px;
+    margin: 130px auto;
+    padding: 40px 20px;
+    border-radius: 50px / 25px;
+    box-shadow: 0 8px 16px rgba(63, 139, 214, 0.2);
+    background-color: #ffffff;
+}
+
+#signup-form .meta-mask-account {
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-size: 18px;
+    color: #333;
+    text-align: center;
+}
+
+#signup-form form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+#signup-form .form-column {
+    display: flex;
+    flex-direction: column;
+    width: 48%;
+}
+
+#signup-form label {
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+#signup-form input[type="text"],
+#signup-form input[type="date"],
+#signup-form input[type="email"],
+#signup-form input[type="tel"],
+#signup-form input[type="number"],
+#signup-form select {
+    width: 90%; /* Decreased width */
+    padding: 8px;
+    margin-bottom: 12px;
+    border: 1px solid #e3e3e3;
+    border-radius: 20px;
+    font-size: 16px;
+    padding-left: 8px;
+    box-sizing: border-box;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+    margin: 0 auto; /* Center align input fields */
+}
+
+#signup-form input[type="text"]:focus,
+#signup-form input[type="date"]:focus,
+#signup-form input[type="email"]:focus,
+#signup-form input[type="tel"]:focus,
+#signup-form input[type="number"]:focus,
+#signup-form select:focus {
+    box-shadow: 0 4px 8px rgba(63, 139, 214, 0.6);
+    outline: none;
+}
+
+.button-3 {
+    background-color: #0078d0;
+    border: 0;
+    border-radius: 20px;
+    color: #fff;
+    cursor: pointer;
+    display: block;
+    font-family: system-ui, -apple-system, system-ui, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    outline: 0;
+    padding: 12px;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    overflow: hidden;
+    width: 60%; /* Decreased width */
+    margin: 20px auto; /* Center align button */
+}
+
+.button-3:before {
+    background-color: initial;
+    background-image: linear-gradient(#fff 0, rgba(255, 255, 255, 0) 100%);
+    border-radius: 20px;
+    content: "";
+    height: 50%;
+    left: 4%;
+    opacity: 0.5;
+    position: absolute;
+    top: 0;
+    transition: all 0.3s;
+    width: 92%;
+}
+
+.button-3:hover {
+    box-shadow: rgba(255, 255, 255, 0.2) 0 3px 15px inset, rgba(0, 0, 0, 0.1) 0 3px 5px, rgba(0, 0, 0, 0.1) 0 10px 13px;
+    transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+    #signup-form {
+        padding: 20px;
+    }
+
+    #signup-form .form-column {
+        width: 100%;
+    }
+
+    #signup-form input[type="text"],
+    #signup-form input[type="date"],
+    #signup-form input[type="email"],
+    #signup-form input[type="tel"],
+    #signup-form input[type="number"],
+    #signup-form select,
+    .button-3 {
+        width: 100%; /* Full width for smaller screens */
+    }
+}

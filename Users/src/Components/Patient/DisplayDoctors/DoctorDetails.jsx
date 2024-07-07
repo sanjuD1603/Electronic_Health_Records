@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { usePatientContext } from "./PatientContext";
-import { setupContract } from "../../Ethereum/Contracts/web3";
+import { web3, setupContract } from "../../Ethereum/Contracts/web3";
+import PatientNavbar from '../PatientNavbar';
+import "../../Css/DoctorDetails.css"
 
 const DoctorDetails = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const doctor = location.state.doctor;
+  const doctor = location.state?.doctor;
   const { patientInfo } = usePatientContext();
+
+  if (!doctor || !patientInfo) {
+    return <div>Loading...</div>;
+  }
 
   const doctorAddress = doctor.metaMaskAccount;
   const patientAddress = patientInfo.metaMaskAccount;
@@ -241,17 +247,78 @@ const DoctorDetails = () => {
 
   return (
     <>
-      <div>
-        <h1>
-          {doctor.firstName} {doctor.lastName}
-        </h1>
-        <p>Specialization: {doctor.specialization}</p>
-        <p>Experience: {doctor.yearsOfExperience} years</p>
-        <p>Email: {doctor.email}</p>
-        <p>Address: {doctor.doctorAddress}</p>
-        <p>Phone: {doctor.phoneNumber}</p>
-        <p>Medical License Number: {doctor.medicalLicenseNumber}</p>
-        <p>Date of Birth: {doctor.dateOfBirth}</p>
+      <PatientNavbar />
+      <div className="container">
+        <div className="doctor-details">
+          <h1>
+            {doctor.firstName} {doctor.lastName}
+          </h1>
+          <p>Specialization: {doctor.specialization}</p>
+          <p>Experience: {doctor.yearsOfExperience} years</p>
+          <p>Email: {doctor.email}</p>
+          <p>Address: {doctor.doctorAddress}</p>
+          <p>Phone: {doctor.phoneNumber}</p>
+          <p>Medical License Number: {doctor.medicalLicenseNumber}</p>
+          <p>Date of Birth: {doctor.dateOfBirth}</p>
+        </div>
+
+        <div className="button-container">
+          <button onClick={() => setShowForm(true)}>Book an Appointment</button>
+          <button onClick={handleClearAllMeetings}>Clear All Meetings</button>
+        </div>
+
+        {showForm && <AppointmentForm onSubmit={handleFormSubmit} />}
+
+        <h2>Doctor's Meetings</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Patient Name</th>
+              <th>Meeting Description</th>
+              <th>Meeting Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {doctorMeetings.map((meeting, index) => (
+              <tr key={index}>
+                <td>
+                  {patientLookup[meeting.patientAddress]?.patient?.firstName}{" "}
+                  {patientLookup[meeting.patientAddress]?.patient?.lastName}
+                </td>
+                <td>{meeting.meetingDescription}</td>
+                <td>
+                  {new Date(Number(meeting.meetingTime) * 1000).toLocaleString()}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        <h2>Patient's Meetings</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Doctor Name</th>
+              <th>Meeting Description</th>
+              <th>Meeting Time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {patientMeetings.map((meeting, index) => (
+              <tr key={index}>
+                <td>
+                  Dr.{" "}
+                  {doctorLookup[meeting.doctorAddress]?.doctor?.firstName}{" "}
+                  {doctorLookup[meeting.doctorAddress]?.doctor?.lastName}
+                </td>
+                <td>{meeting.meetingDescription}</td>
+                <td>
+                  {new Date(Number(meeting.meetingTime) * 1000).toLocaleString()}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       <button onClick={() => setShowForm(true)}>Book an Appointment</button>

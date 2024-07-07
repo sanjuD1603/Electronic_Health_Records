@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PatientNavbar from "./PatientNavbar";
 import { useNavigate, useLocation } from "react-router-dom";
 import { setupContract } from "../Ethereum/Contracts/web3";
 import DoctorGrid from "./DisplayDoctors/DoctorGrid";
@@ -12,18 +13,13 @@ const ViewDoctors = () => {
   const navigate = useNavigate();
   const { setPatientInfo } = usePatientContext(); // Use context to set patient info
   const [doctors, setDoctors] = useState([]);
-
+console.log(location.state)
   useEffect(() => {
     const metaMaskAccount = location.state.metaMaskAccount;
     const patInfo = location.state.patient;
 
-    // console.log(metaMaskAccount);
-    // console.log(patInfo);
-
     // Save the MetaMaskAccount and patInfo in the context
     const setpatInfo = setPatientInfo({ metaMaskAccount, patInfo });
-
-    // console.log("Hello from setpatientInfo:", !setpatInfo);
 
     const getDoctors = async () => {
       try {
