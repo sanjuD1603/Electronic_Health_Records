@@ -75,7 +75,7 @@ const ViewPatients = () => {
 
   useEffect(() => {
     // Debugging state update
-    console.log("Patients state updated:", patients);
+    // console.log("Patients state updated:", patients);
   }, [patients]);
 
   return (

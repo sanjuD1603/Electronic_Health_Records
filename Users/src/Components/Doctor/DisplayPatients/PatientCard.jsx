@@ -7,7 +7,7 @@ const PatientCard = ({ patient }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  console.log("From Patient Card", patient);
+  // console.log("From Patient Card", patient);
 
   const handleClick = () => {
     navigate(`/doctor/displaypatients/patientdetails/${patient.email}`, { state: { patient } });
