@@ -107,12 +107,17 @@ const DoctorSignUp = () => {
         }
     };
 
+    const formatWalletAddress = (address) => {
+        if (!address) return '';
+        return `${address.slice(0, 4)}...${address.slice(-2)}`;
+      };
+
     return (
         <>
             <h1>Doctor Registration Form</h1>
             <div id="signup-form">
                 <div className="meta-mask-account">
-                    MetaMask Account: {formData.metaMaskAccount}
+                    MetaMask Account: {formatWalletAddress(formData.metaMaskAccount)}
                 </div>
                 <form onSubmit={handleSubmit}>
                     <div className="form-column">

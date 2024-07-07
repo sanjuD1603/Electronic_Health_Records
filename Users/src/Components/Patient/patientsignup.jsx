@@ -153,12 +153,16 @@ const PatientSignUp = () => {
     }
   };
 
+  const formatWalletAddress = (address) => {
+    if (!address) return '';
+    return `${address.slice(0, 4)}...${address.slice(-2)}`;
+  };
   return (
     <>
       <h1>Patient Registration</h1>
       <div id="signup-form">
         <div className="meta-mask-account">
-          MetaMask Account: {metaMaskAccount}
+          MetaMask Account: {formatWalletAddress(metaMaskAccount)}
         </div>
         <form onSubmit={handleSubmit}>
           <div className="form-column">

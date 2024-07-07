@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { usePatientContext } from "./PatientContext";
 import { web3, setupContract } from "../../Ethereum/Contracts/web3";
 import PatientNavbar from '../PatientNavbar';
-import "../../Css/DoctorDetails.css"
+import "../../Css/DoctorDetails.css";
 
 const DoctorDetails = () => {
   const location = useLocation();
@@ -24,6 +24,11 @@ const DoctorDetails = () => {
   const [doctorLookup, setDoctorLookup] = useState({});
   const [patientLookup, setPatientLookup] = useState({});
   const [timeLeft, setTimeLeft] = useState({});
+
+  const formatWalletAddress = (address) => {
+    if (!address) return '';
+    return `${address.slice(0, 4)}...${address.slice(-2)}`;
+  };
 
   // Function to fetch doctor's meetings
   const fetchDoctorMeetings = async () => {
@@ -173,7 +178,7 @@ const DoctorDetails = () => {
     return (
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Description:</label>
+          <label>Description</label>
           <input
             type="text"
             value={meetingDescription}
@@ -182,7 +187,7 @@ const DoctorDetails = () => {
           />
         </div>
         <div>
-          <label>Meeting Time:</label>
+          <label>Meeting Time</label>
           <input
             type="datetime-local"
             value={meetingTime}
@@ -210,40 +215,40 @@ const DoctorDetails = () => {
     }
   };
 
-  const handleAcceptMeeting = async (index) => {
-    const contract = await setupContract();
-    // const meetingId = patientMeetings[index].id; // Assuming `id` is the unique identifier
-    console.log("Attempting to accept meeting with ID:", index);
+  // const handleAcceptMeeting = async (index) => {
+  //   const contract = await setupContract();
+  //   // const meetingId = patientMeetings[index].id; // Assuming `id` is the unique identifier
+  //   console.log("Attempting to accept meeting with ID:", index);
 
-    try {
-      await contract.methods
-        .acceptMeeting(index) // Pass meeting index to Solidity function
-        .send({ from: patientAddress, gas: 5000000, gasPrice: "20000000000" });
-      console.log("Meeting accepted successfully!");
-      // Update state after accepting meeting
-      fetchDoctorMeetings();
-      fetchPatientMeetings();
-    } catch (error) {
-      console.error("Error accepting meeting:", error);
-    }
-  };
+  //   try {
+  //     await contract.methods
+  //       .acceptMeeting(index) // Pass meeting index to Solidity function
+  //       .send({ from: patientAddress, gas: 5000000, gasPrice: "20000000000" });
+  //     console.log("Meeting accepted successfully!");
+  //     // Update state after accepting meeting
+  //     fetchDoctorMeetings();
+  //     fetchPatientMeetings();
+  //   } catch (error) {
+  //     console.error("Error accepting meeting:", error);
+  //   }
+  // };
 
-  const handleRejectMeeting = async (index) => {
-    const contract = await setupContract();
-    const meetingId = patientMeetings[index].id; // Assuming `id` is the unique identifier
+  // const handleRejectMeeting = async (index) => {
+  //   const contract = await setupContract();
+  //   const meetingId = patientMeetings[index].id; // Assuming `id` is the unique identifier
 
-    try {
-      await contract.methods
-        .rejectMeeting(index) // Pass meeting index to Solidity function
-        .send({ from: patientAddress, gas: 5000000, gasPrice: "20000000000" });
-      console.log("Meeting rejected successfully!");
-      // Update state after rejecting meeting
-      fetchDoctorMeetings();
-      fetchPatientMeetings();
-    } catch (error) {
-      console.error("Error rejecting meeting:", error.message);
-    }
-  };
+  //   try {
+  //     await contract.methods
+  //       .rejectMeeting(index) // Pass meeting index to Solidity function
+  //       .send({ from: patientAddress, gas: 5000000, gasPrice: "20000000000" });
+  //     console.log("Meeting rejected successfully!");
+  //     // Update state after rejecting meeting
+  //     fetchDoctorMeetings();
+  //     fetchPatientMeetings();
+  //   } catch (error) {
+  //     console.error("Error rejecting meeting:", error.message);
+  //   }
+  // };
 
   return (
     <>
@@ -257,6 +262,7 @@ const DoctorDetails = () => {
           <p>Experience: {doctor.yearsOfExperience} years</p>
           <p>Email: {doctor.email}</p>
           <p>Address: {doctor.doctorAddress}</p>
+          <p>WalletAddress: {formatWalletAddress(doctor.metaMaskAccount)} </p>
           <p>Phone: {doctor.phoneNumber}</p>
           <p>Medical License Number: {doctor.medicalLicenseNumber}</p>
           <p>Date of Birth: {doctor.dateOfBirth}</p>
@@ -267,9 +273,9 @@ const DoctorDetails = () => {
           <button onClick={handleClearAllMeetings}>Clear All Meetings</button>
         </div>
 
-        {showForm && <AppointmentForm onSubmit={handleFormSubmit} />}
+        {showForm && <AppointmentForm onSubmit={AppointmentForm} />}
 
-        <h2>Doctor's Meetings</h2>
+        {/* <h2>Doctor's Meetings</h2>
         <table>
           <thead>
             <tr>
@@ -318,63 +324,84 @@ const DoctorDetails = () => {
               </tr>
             ))}
           </tbody>
-        </table>
+        </table> */}
       </div>
 
-      <button onClick={() => setShowForm(true)}>Book an Appointment</button>
+      {/* <button onClick={() => setShowForm(true)}>Book an Appointment</button>
 
       {showForm && <AppointmentForm onSubmit={AppointmentForm} />}
 
-      <button onClick={handleClearAllMeetings}>Clear All Meetings</button>
+      <button onClick={handleClearAllMeetings}>Clear All Meetings</button> */}
 
-      <h2>Doctor's Meetings</h2>
-      <ul>
-        {doctorMeetings.map((meeting, index) => (
-          <li key={index}>
-            <p>
-              Patient Name: {patientLookup[meeting.patientAddress]?.firstName}{" "}
-              {patientLookup[meeting.patientAddress]?.lastName}
-            </p>
-            <p>Meeting Description: {meeting.meetingDescription}</p>
-            <p>
-              Meeting Time:{" "}
-              {new Date(Number(meeting.meetingTime) * 1000).toLocaleString()}
-            </p>
-            <p>Status: {meeting.isVerified ? "Accepted" : "Pending"}</p>
-            {!meeting.isVerified && (
-              <>
-                <button onClick={() => handleAcceptMeeting(index)}>Accept</button>
-                <button onClick={() => handleRejectMeeting(index)}>Reject</button>
-              </>
-            )}
-          </li>
-        ))}
-      </ul>
+      {/* <h2>Doctor's Meetings</h2>
+      <table>
+          <thead>
+            <tr>
+              <th>Patient Name</th>
+              <th>Meeting Description</th>
+              <th>Meeting Time</th>
+              <th>Status</th>
+              <th>Accept/ Reject</th>
+            </tr>
+          </thead>
+          <tbody>
+            {doctorMeetings.map((meeting, index) => (
+              <tr key={index}>
+                <td>
+                  {patientLookup[meeting.patientAddress].patient?.firstName}{" "}
+                  {patientLookup[meeting.patientAddress].patient?.lastName}
+                </td>
+                <td>{meeting.meetingDescription}</td>
+                <td>
+                  {" "}
+                  {new Date(Number(meeting.meetingTime) * 1000).toLocaleString()}
+                </td>
+                <td>{meeting.isVerified ? "Accepted" : "Pending"}</td>
+                {!meeting.isVerified && (
+                   <td> <button onClick={() => handleAcceptMeeting(index)}>Accept</button> {" ---- "}
+                    <button onClick={() => handleRejectMeeting(index)}>Reject</button>
+                  </td>
+                )}
+              </tr>
+            ))}
+          </tbody>
+      </table> */}
 
       <h2>Patient's Meetings</h2>
-      <ul>
-        {patientMeetings.map((meeting, index) => (
-          <li key={index}>
-            <p>
-              Doctor Name: Dr.{" "}
-              {doctorLookup[meeting.doctorAddress]?.firstName}{" "}
-              {doctorLookup[meeting.doctorAddress]?.lastName}
-            </p>
-            <p>Meeting Description: {meeting.meetingDescription}</p>
-            <p>
-              Meeting Time:{" "}
-              {new Date(Number(meeting.meetingTime) * 1000).toLocaleString()}
-            </p>
-            <p>Status: {meeting.isVerified ? "Accepted" : "Pending"}</p>
-            {meeting.isVerified && (
-              <p>
-                Time Left: {timeLeft[meeting.id]?.hours} hours{" "}
-                {timeLeft[meeting.id]?.minutes} minutes
-              </p>
-            )}
-          </li>
-        ))}
-      </ul>
+      <table>
+        <thead>
+          <tr>
+            <th>Doctor Name</th>
+            <th>Meeting Description</th>
+            <th>Meeting Time</th>
+            <th>Status</th>
+            <th>Time Remaining</th>
+          </tr>
+        </thead>
+        <tbody>
+          {patientMeetings.map((meeting, index) => (
+            <tr key={index}>
+              <td>
+                Dr.{" "}
+                {doctorLookup[meeting.doctorAddress].doctor?.firstName}{" "}
+                {doctorLookup[meeting.doctorAddress].doctor?.lastName}
+              </td>
+              <td>{meeting.meetingDescription}</td>
+              <td>
+                Meeting Time:{" "}
+                {new Date(Number(meeting.meetingTime) * 1000).toLocaleString()}
+              </td>
+              <td>{meeting.isVerified ? "Accepted" : "Pending"}</td>
+              {meeting.isVerified && (
+                <td>
+                  Time Left: {timeLeft[meeting.id]?.hours} hours{" "}
+                  {timeLeft[meeting.id]?.minutes} minutes
+                </td>
+              )}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </>
   );
 };
