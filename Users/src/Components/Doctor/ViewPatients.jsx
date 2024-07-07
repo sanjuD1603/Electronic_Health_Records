@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { setupContract } from "../Ethereum/Contracts/web3";
 import { useDoctorContext } from "./DisplayPatients/DoctorContext";
 import "../Patient/DisplayDoctors/css/DoctorGrid.css";
-import "../Patient/DisplayDoctors/css/DoctorCard.css";
+import '../Css/DoctorCard.css'
 import DoctorNavbar from "./DoctorNavbar";
 import PatientGrid from "./DisplayPatients/PatientGrid";
 
