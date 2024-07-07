@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
+import DoctorDashBoard from "./Dashboard";
 
 const DoctorViewProfile = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const metaMaskAccount = location.state?.metaMaskAccount;
     const [formData, setFormData] = useState(null);
+
+    console.log(location.state)
 
     useEffect(() => {
         setFormData({
@@ -28,6 +30,7 @@ const DoctorViewProfile = () => {
 
     return (
         <>
+            <DoctorDashBoard />
             <h1>Welcome Back, Dr. {formData.firstName}!</h1>
             <p><strong>First Name:</strong> {formData.firstName}</p>
             <p><strong>Last Name:</strong> {formData.lastName}</p>

@@ -21,42 +21,52 @@ import DoctorViewProfile from './Components/Doctor/Viewprofile';
 import DoctorDashBoard  from './Components/Doctor/Dashboard';
 import ViewPatients from './Components/Doctor/ViewPatients';
 import DocUploadFiles from './Components/Doctor/UploadFiles';
-
+  import PatientCard from './Components/Doctor/DisplayPatients/PatientCard';
+  import PatientGrid from './Components/Doctor/DisplayPatients/PatientGrid';
+  import PatientDetails from './Components/Doctor/DisplayPatients/PatientDetails';
+  import { DoctorProvider } from './Components/Doctor/DisplayPatients/DoctorContext';
  import './App.css';
 
 function App() {
   return (
     <PatientProvider>
-      <div>
-         <Navbar /> 
-        <Routes>
-          {/* Src Directory */}
-          <Route path="/" element={<Home />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/selectrole" element={<SelectRole />} />
-          
-          {/* Patient directory */}
-          <Route path="/patient/patientsignup" element={<PatientSignUp />} />
-          <Route path="/patient/dashboard/*" element={<PatientDashboard />} />
-          <Route path="/patient/viewprofile" element={<PatientViewProfile />} />
-          <Route path="/patient/ViewDoctors" element={<ViewDoctors />} />
-          <Route path="/patient/UploadFiles" element={<UploadFiles />} />
+      <DoctorProvider>
+        <div>
+          {/* <Navbar />  */}
+          <Routes>
+            {/* Src Directory */}
+            <Route path="/" element={<Home />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/selectrole" element={<SelectRole />} />
+            
+            {/* Patient directory */}
+            <Route path="/patient/patientsignup" element={<PatientSignUp />} />
+            <Route path="/patient/dashboard/*" element={<PatientDashboard />} />
+            <Route path="/patient/viewprofile" element={<PatientViewProfile />} />
+            <Route path="/patient/ViewDoctors" element={<ViewDoctors />} />
+            <Route path="/patient/UploadFiles" element={<UploadFiles />} />
 
-            {/* Display Doctors */}
-            <Route path="/patient/displaydoctors/doctorcard" element={<DoctorCard />} />
-            <Route path="/patient/displaydoctors/doctordetails/:email" element={<DoctorDetails />} />
-            <Route path="/patient/displaydoctors/doctorgrid" element={<DoctorGrid />} />
+              {/* Display Doctors */}
+              <Route path="/patient/displaydoctors/doctorcard" element={<DoctorCard />} />
+              <Route path="/patient/displaydoctors/doctordetails/:email" element={<DoctorDetails />} />
+              <Route path="/patient/displaydoctors/doctorgrid" element={<DoctorGrid />} />
 
 
-          {/* Doctor Directory */}
-          <Route path="/doctor/doctorsignup" element={<DoctorSignUp />} />
-          <Route path="/doctor/viewprofile" element={<DoctorViewProfile />} />
-          <Route path="/doctor/dashboard" element={<DoctorDashBoard />} />
-          <Route path="/doctor/viewpatients" element={<ViewPatients />} />
-          <Route path="/doctor/uploadfiles" element={<DocUploadFiles />} />
+            {/* Doctor Directory */}
+            <Route path="/doctor/doctorsignup" element={<DoctorSignUp />} />
+            <Route path="/doctor/viewprofile" element={<DoctorViewProfile />} />
+            <Route path="/doctor/dashboard" element={<DoctorDashBoard />} />
+            <Route path="/doctor/viewpatients" element={<ViewPatients />} />
+            <Route path="/doctor/uploadfiles" element={<DocUploadFiles />} />
 
-        </Routes>
-      </div>
+              {/* Display Patients */}
+              <Route path="/doctor/displaypatients/patientcard" element={<PatientCard />} />
+              <Route path="/doctor/displaypatients/patientdetails/:email" element={<PatientDetails />} />
+              <Route path="/doctor/displaypatients/patientgrid" element={<PatientGrid />} />
+
+          </Routes>
+        </div>
+      </DoctorProvider>
     </PatientProvider>
   );
 }
