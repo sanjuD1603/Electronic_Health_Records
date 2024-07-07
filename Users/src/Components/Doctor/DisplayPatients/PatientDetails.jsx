@@ -18,7 +18,7 @@ const PatientDetails = () => {
   const [patientLookup, setPatientLookup] = useState({});
 
   const formatWalletAddress = (address) => {
-    if (!address) return '';
+    if (!address) return "";
     return `${address.slice(0, 4)}...${address.slice(-2)}`;
   };
 
@@ -81,16 +81,16 @@ const PatientDetails = () => {
         await contract.methods
           .acceptMeeting(meetingIndex)
           .send({ from: doctorAddress, gas: 5000000, gasPrice: "20000000000" })
-          .on('receipt', receipt => {
-            console.log('Transaction receipt:', receipt);
+          .on("receipt", (receipt) => {
+            console.log("Transaction receipt:", receipt);
             fetchDoctorMeetings(); // Refresh the meetings data
           })
-          .on('error', error => {
-            console.error('Error accepting meeting:', error);
+          .on("error", (error) => {
+            console.error("Error accepting meeting:", error);
           });
       } catch (error) {
         console.error("Error accepting meeting:", error.message);
-        if (error.message.includes('revert')) {
+        if (error.message.includes("revert")) {
           console.error("Revert reason:", error.message);
         }
       }
@@ -101,7 +101,7 @@ const PatientDetails = () => {
 
   const handleRejectMeeting = async (meetingIndex) => {
     const contract = await setupContract();
-    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+    const accounts = await window.ethereum.request({ method: "eth_accounts" });
     const currentAccount = accounts[0];
 
     console.log("Current account:", currentAccount);
@@ -116,20 +116,22 @@ const PatientDetails = () => {
       await contract.methods
         .rejectMeeting(meetingIndex)
         .send({ from: doctorAddress, gas: 5000000, gasPrice: "20000000000" })
-        .on('receipt', receipt => {
-          console.log('Transaction receipt:', receipt);
+        .on("receipt", (receipt) => {
+          console.log("Transaction receipt:", receipt);
           fetchDoctorMeetings(); // Refresh the meetings data
         })
-        .on('error', error => {
-          console.error('Error rejecting meeting:', error);
+        .on("error", (error) => {
+          console.error("Error rejecting meeting:", error);
         });
     } catch (error) {
       console.error("Error rejecting meeting:", error.message);
-      if (error.message.includes('revert')) {
+      if (error.message.includes("revert")) {
         console.error("Revert reason:", error.message);
       }
     }
   };
+
+  const gotoUploadDocument = () => {};
 
   return (
     <>
@@ -145,7 +147,9 @@ const PatientDetails = () => {
           <p>Phone: {patient["phoneNumber"]}</p>
           <p>Date of Birth: {patient["dateOfBirth"]}</p>
           <p>Blood Group: {patient["bloodgroup"]}</p>
-          <p>Wallet Address: {formatWalletAddress(patient["metaMaskAccount"])}</p>
+          <p>
+            Wallet Address: {formatWalletAddress(patient["metaMaskAccount"])}
+          </p>
           <p>Insurance Provider: {patient["insuranceProvider"]}</p>
           <p>Policy Number: {patient["policyNumber"]}</p>
         </div>
@@ -159,31 +163,47 @@ const PatientDetails = () => {
             <th>Meeting Time</th>
             <th>Status</th>
             <th>Accept/Reject</th>
+            <th>Upload Documents</th>
           </tr>
         </thead>
         <tbody>
           {doctorMeetings.map((meeting, index) => (
             <tr key={index}>
               <td>
-                {patientLookup[meeting.patientAddress].patient?.firstName}{" "}
-                {patientLookup[meeting.patientAddress].patient?.lastName}
+                {patientLookup[meeting.patientAddress]?.patient?.firstName ||
+                  ""}{" "}
+                {patientLookup[meeting.patientAddress]?.patient?.lastName || ""}
               </td>
-              <td>{meeting.meetingDescription}</td>
+              <td>{meeting.meetingDescription || ""}</td>
               <td>
-                {new Date(Number(meeting.meetingTime) * 1000).toLocaleString()}
+                {meeting.meetingTime
+                  ? new Date(
+                      Number(meeting.meetingTime) * 1000
+                    ).toLocaleString()
+                  : ""}
               </td>
-              <td>{meeting.isVerified ? "Accepted" : "Pending"}</td>
-              {!meeting.isVerified && (
-                <td>
-                  <button onClick={() => handleAcceptMeeting(index)}>
-                    Accept
-                  </button>
-                  {" ---- "}
-                  <button onClick={() => handleRejectMeeting(index)}>
-                    Reject
-                  </button>
-                </td>
-              )}
+              <td>
+                {typeof meeting.isVerified !== "undefined"
+                  ? meeting.isVerified
+                    ? "Accepted"
+                    : "Pending"
+                  : ""}
+              </td>
+              {typeof meeting.isVerified !== "undefined" &&
+                !meeting.isVerified && (
+                  <td>
+                    <button onClick={() => handleAcceptMeeting(index)}>
+                      Accept
+                    </button>
+                    {" ---- "}
+                    <button onClick={() => handleRejectMeeting(index)}>
+                      Reject
+                    </button>
+                  </td>
+                )}
+              <td>
+                <button onClick={gotoUploadDocument}>Upload Document</button>
+              </td>
             </tr>
           ))}
         </tbody>
