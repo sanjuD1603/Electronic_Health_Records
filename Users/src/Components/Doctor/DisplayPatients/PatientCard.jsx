@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import '../../Patient/DisplayDoctors/css/DoctorCard.css';
+// import '../../Patient/DisplayDoctors/css/DoctorCard.css';
+import '../../Css/DoctorCard.css'
 
 const PatientCard = ({ patient }) => {
   const navigate = useNavigate();

@@ -1,15 +1,14 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import detectEthereumProvider from "@metamask/detect-provider";
 import doctorImage from "./assets/doctor-icon.png";
 import patientImage from "./assets/patient-icon.png";
 import { setupContract } from "./Ethereum/Contracts/web3"; // Import web3 instance and setupContract function
-// import { PatientContext } from "./PatientContext";
-
+import '../Components/assets/selectrole.css';
+import Navbar from "./Navbar"
 const SelectRole = () => {
   const navigate = useNavigate();
-  const [metaMaskAccount, setmetaMaskAccount] = useState("");
-  // const { setPatientDetails, setMetaMaskAccount } = useContext(PatientContext);
+  const [metaMaskAccount, setMetaMaskAccount] = useState("");
   const [state, setState] = useState({ web3: null, contract: null });
 
   const connectMetaMask = async () => {
@@ -21,8 +20,7 @@ const SelectRole = () => {
           method: "eth_requestAccounts",
         });
         const account = accounts[0];
-        setmetaMaskAccount(account);
-        // setMetaMaskAccount(account);
+        setMetaMaskAccount(account);
         return account;
       } catch (error) {
         console.error("MetaMask error:", error);
@@ -38,7 +36,6 @@ const SelectRole = () => {
 
   const registerAndRedirect = async (contract, account, role) => {
     try {
-      // Register the account with role in the contract
       const transaction = await contract.methods
         .registerAccount(account, role)
         .send({
@@ -50,7 +47,6 @@ const SelectRole = () => {
         "Account Created successfully at: ",
         transaction.transactionHash
       );
-      // Redirect based on role after registration
       if (role === "patient") {
         navigate("/Patient/patientsignup", {
           state: {
@@ -139,7 +135,6 @@ const SelectRole = () => {
           }
           return;
         }
-        // Emit AccountExists event
         contract.events.AccountExists({
           filter: { metaMaskAccount: account },
         });
@@ -170,13 +165,15 @@ const SelectRole = () => {
 
   const disconnectMetaMask = () => {
     console.log("Disconnecting MetaMask account");
-    setmetaMaskAccount("");
+    setMetaMaskAccount("");
     if (window.ethereum && window.ethereum.disconnect) {
       window.ethereum.disconnect();
     }
   };
 
   return (
+    <>
+    <Navbar/>
     <div className="select-role">
       <h1>⚕️ Select Your Role ⚕️</h1>
       <div className="role-buttons">
@@ -201,6 +198,8 @@ const SelectRole = () => {
         </div>
       )}
     </div>
+    </>
+    
   );
 };
 
