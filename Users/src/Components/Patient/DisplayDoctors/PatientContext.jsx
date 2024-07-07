@@ -10,13 +10,37 @@ export const PatientProvider = ({ children }) => {
     return savedPatientInfo ? JSON.parse(savedPatientInfo) : {};
   });
 
+  const [clearSwitch, setClearSwitch] = useState(true); // Default to true
+
   useEffect(() => {
-    localStorage.setItem('patientInfo', JSON.stringify(patientInfo));
-  }, [patientInfo]);
+    if (clearSwitch) {
+      localStorage.setItem('patientInfo', JSON.stringify(patientInfo));
+    } else {
+      setPatientInfo({});
+      localStorage.removeItem('patientInfo');
+    }
+  }, [patientInfo, clearSwitch]);
 
   return (
-    <PatientContext.Provider value={{ patientInfo, setPatientInfo }}>
+    <PatientContext.Provider value={{ patientInfo, setPatientInfo, setClearSwitch }}>
       {children}
     </PatientContext.Provider>
   );
 };
+
+// Example component to toggle the clearSwitch
+const ToggleClearSwitch = () => {
+  const { setClearSwitch } = usePatientContext();
+
+  const toggleSwitch = () => {
+    setClearSwitch(prevState => !prevState);
+  };
+
+  return (
+    <button onClick={toggleSwitch}>
+      Toggle Clear Switch
+    </button>
+  );
+};
+
+// Use ToggleClearSwitch in your application to toggle the boolean switch

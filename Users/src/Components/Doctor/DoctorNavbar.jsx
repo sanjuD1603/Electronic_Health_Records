@@ -3,35 +3,35 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import '../../Components/Css/Navbar1.css';
 import logo from '../../Components/assets/Images/Navlogo.png';
 
-const PatientNavbar = () => {
+const DoctorNavbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const metaMaskAccount = location.state?.metaMaskAccount;
-  const patInfo = location.state?.patient;
+  const docInfo = location.state?.doctor;
 
   const gotoViewProfile = async() => {
-    navigate('/patient/viewprofile', {
+    navigate('/Doctor/viewprofile', {
       state: {
         metaMaskAccount: metaMaskAccount,
-        patient: patInfo
+        doctor: docInfo
       }
     });
   };
 
-  const gotoViewDoctors = async() => {
-    navigate('/patient/viewdoctors', {
+  const gotoViewPatients = async() => {
+    navigate('/Doctor/viewpatients', {
       state: {
         metaMaskAccount: metaMaskAccount,
-        patient: patInfo
+        doctor: docInfo
       }
     });
   };
 
   const gotoUploadFile = async() => {
-    navigate('/patient/uploadfiles', {
+    navigate('/Doctor/uploadfiles', {
       state: {
         metaMaskAccount: metaMaskAccount,
-        patient: patInfo
+        doctor: docInfo
       }
     });
   };
@@ -49,7 +49,7 @@ const PatientNavbar = () => {
       </Link>
       <ul className="nav-links">
         <li><button className="button-2" onClick={gotoViewProfile}>View Profile</button></li>
-        <li><button className="button-2" onClick={gotoViewDoctors}>View Doctors</button></li>
+        <li><button className="button-2" onClick={gotoViewPatients}>View Patients</button></li>
         <li><button className="button-2" onClick={gotoUploadFile}>Upload Files</button></li>
       </ul>
       <Link to="/" className="button-5">Logout</Link>
@@ -57,4 +57,4 @@ const PatientNavbar = () => {
   );
 };
 
-export default PatientNavbar;
+export default DoctorNavbar;

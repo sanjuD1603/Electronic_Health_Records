@@ -5,6 +5,7 @@ import DoctorGrid from "./DisplayDoctors/DoctorGrid";
 import { usePatientContext } from "./DisplayDoctors/PatientContext";
 import "./DisplayDoctors/css/DoctorGrid.css";
 import "./DisplayDoctors/css/DoctorCard.css";
+import PatientNavbar from "./PatientNavbar";
 
 const ViewDoctors = () => {
   const location = useLocation();
@@ -64,6 +65,7 @@ const ViewDoctors = () => {
 
   return (
     <div>
+      <PatientNavbar/>
       <h1>View Doctors</h1>
       <DoctorGrid doctors={doctors} />
     </div>
