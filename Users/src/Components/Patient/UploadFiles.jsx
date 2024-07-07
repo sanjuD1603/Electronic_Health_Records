@@ -7,7 +7,7 @@ import PatientNavbar from "./PatientNavbar";
 const UploadFiles = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  
+// hello
   const [file, setFile] = useState(null);
   const [name, setName] = useState('');
   const [uploadStatus, setUploadStatus] = useState([]);
