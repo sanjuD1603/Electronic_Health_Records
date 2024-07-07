@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { web3, setupContract } from "../Ethereum/Contracts/web3";
+import PatientNavbar from "./PatientNavbar";
+import profileImage from '../assets/profile-placeholder.jpg'; // Ensure this path is correct
+import '../Css/PatientViewProfile.css'
 
 const PatientViewProfile = () => {
   // console.log("Patient view Profile");
@@ -9,8 +10,6 @@ const PatientViewProfile = () => {
   const navigate = useNavigate();
   // console.log(location.state)
   const metaMaskAccount = location.state?.metaMaskAccount;
-  // console.log(metaMaskAccount);
-  // console.log(location.state.patient);
   const [formData, setFormData] = useState(null);
 
   useEffect(() => {
@@ -32,8 +31,6 @@ const PatientViewProfile = () => {
   useEffect(() => {
     if (!metaMaskAccount) {
       navigate("/Patient/patientsignup");
-    } else {
-
     }
   }, [metaMaskAccount, navigate]);
 
@@ -41,7 +38,6 @@ const PatientViewProfile = () => {
     return <p>Loading profile data...</p>;
   }
 
-  // Determine title based on gender
   const getTitle = () => {
     if (formData.gender === "Male") {
       return "Mr.";
@@ -54,42 +50,49 @@ const PatientViewProfile = () => {
 
   return (
     <>
-      <h1>
-        Welcome Back, {getTitle()} {formData.firstName}!
-      </h1>
-      <p>
-        <strong>First Name:</strong> {formData.firstName}
-      </p>
-      <p>
-        <strong>Last Name:</strong> {formData.lastName}
-      </p>
-      <p>
-        <strong>Date of Birth:</strong> {formData.dateOfBirth}
-      </p>
-      <p>
-        <strong>Email:</strong> {formData.email}
-      </p>
-      <p>
-        <strong>Gender:</strong> {formData.gender}
-      </p>
-      <p>
-        <strong>Address:</strong> {formData.address}
-      </p>
-      <p>
-        <strong>Phone Number:</strong> {formData.phoneNumber}
-      </p>
-      <p>
-        <strong>Blood Group:</strong> {formData.bloodGroup}
-      </p>
-      <p>
-        <strong>MetaMask Account:</strong> {formData.metaMaskAccount}
-      </p>
-      <p>
-        <strong>Insurance Provider:</strong> {formData.insuranceProvider}
-      </p>
-      <p>
-        <strong>Policy Number:</strong> {formData.policyNumber}
-      </p>
+      <PatientNavbar />
+      <div className="profile-container">
+        <div className="profile-image" style={{ backgroundImage: `url(${profileImage})` }}></div>
+        <h1>
+          Welcome Back, {getTitle()} {formData.firstName}!
+        </h1>
+        <div className="profile-info">
+          <div className="info-left">
+            <p>
+              <strong>First Name:</strong> {formData.firstName}
+            </p>
+            <p>
+              <strong>Last Name:</strong> {formData.lastName}
+            </p>
+            <p>
+              <strong>Date of Birth:</strong> {formData.dateOfBirth}
+            </p>
+            <p>
+              <strong>Email:</strong> {formData.email}
+            </p>
+            <p>
+              <strong>Gender:</strong> {formData.gender}
+            </p>
+          </div>
+          <div className="info-right">
+            <p>
+              <strong>Address:</strong> {formData.address}
+            </p>
+            <p>
+              <strong>Phone Number:</strong> {formData.phoneNumber}
+            </p>
+            <p>
+              <strong>Blood Group:</strong> {formData.bloodGroup}
+            </p>
+            <p>
+              <strong>Insurance Provider:</strong> {formData.insuranceProvider}
+            </p>
+            <p>
+              <strong>Policy Number:</strong> {formData.policyNumber}
+            </p>
+          </div>
+        </div>
+      </div>
     </>
   );
 };

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 import '../Css/UploadFiles.css'; // Import the CSS file
-
+import PatientNavbar from "./PatientNavbar";
 const UploadFiles = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -112,6 +112,8 @@ const UploadFiles = () => {
   };
 
   return (
+    <>
+   <PatientNavbar/>
     <div className="upload-container">
       <div className="file-upload-box">
         <input type="file" onChange={handleFileChange} />
@@ -137,6 +139,8 @@ const UploadFiles = () => {
         ))}
       </div>
     </div>
+    </>
+   
   );
 };
 

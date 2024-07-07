@@ -41,6 +41,7 @@ contract HealthSystem {
         address doctorAddress;
         uint256 meetingTime;
         string meetingDescription;
+        bool isVerified;
     }
 
     Meeting[] public meetings;
@@ -49,14 +50,16 @@ contract HealthSystem {
         address _patientAddress,
         address _doctorAddress,
         string memory _meetingDescription,
-        uint256 _meetingTime
+        uint256 _meetingTime,
+        bool _isVerified
     ) public {
         meetings.push(
             Meeting({
                 patientAddress: _patientAddress,
                 doctorAddress: _doctorAddress,
                 meetingTime: _meetingTime,
-                meetingDescription: _meetingDescription
+                meetingDescription: _meetingDescription,
+                isVerified: _isVerified
             })
         );
     }
@@ -78,6 +81,24 @@ contract HealthSystem {
             mstore(patientMeetings, count)
         }
         return patientMeetings;
+    }
+
+        function acceptMeeting(uint256 meetingIndex) public {
+        require(meetingIndex < meetings.length, "Invalid meeting index");
+        require(
+            msg.sender == meetings[meetingIndex].doctorAddress,
+            "Only the doctor can accept the meeting"
+        );
+        meetings[meetingIndex].isVerified = true;
+    }
+
+    function rejectMeeting(uint256 meetingIndex) public {
+        require(meetingIndex < meetings.length, "Invalid meeting index");
+        require(
+            msg.sender == meetings[meetingIndex].doctorAddress,
+            "Only the doctor can reject the meeting"
+        );
+        delete meetings[meetingIndex];
     }
 
     function getDoctorMeetings(
