@@ -42,5 +42,6 @@ const ToggleClearSwitch = () => {
     </button>
   );
 };
+// change
 
 // Use ToggleClearSwitch in your application to toggle the boolean switch
