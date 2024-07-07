@@ -267,7 +267,7 @@ const DoctorDetails = () => {
           <button onClick={handleClearAllMeetings}>Clear All Meetings</button>
         </div>
 
-        {showForm && <AppointmentForm onSubmit={handleFormSubmit} />}
+        {showForm && <AppointmentForm onSubmit={AppointmentForm} />}
 
         <h2>Doctor's Meetings</h2>
         <table>
