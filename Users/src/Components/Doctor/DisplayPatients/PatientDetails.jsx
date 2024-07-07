@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useDoctorContext } from "./DoctorContext";
 import { setupContract } from "../../Ethereum/Contracts/web3";
 import DoctorNavbar from "../DoctorNavbar";
+import detectEthereumProvider from "@metamask/detect-provider";
 
 const PatientDetails = () => {
   const location = useLocation();
@@ -10,20 +11,11 @@ const PatientDetails = () => {
   const patient = location.state.patient;
   const { doctorInfo } = useDoctorContext();
 
-  console.log(patient);
-
   const patientAddress = patient["metaMaskAccount"];
   const doctorAddress = doctorInfo.metaMaskAccount;
 
-  console.log(patientAddress);
-  console.log(doctorAddress);
-
-  const [showForm, setShowForm] = useState(false);
   const [doctorMeetings, setDoctorMeetings] = useState([]);
-  const [patientMeetings, setPatientMeetings] = useState([]);
-  const [doctorLookup, setDoctorLookup] = useState({});
   const [patientLookup, setPatientLookup] = useState({});
-  const [timeLeft, setTimeLeft] = useState({});
 
   const formatWalletAddress = (address) => {
     if (!address) return '';
@@ -43,11 +35,8 @@ const PatientDetails = () => {
   };
 
   useEffect(() => {
-    fetchDoctorMeetings(); // Initial fetch
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchDoctorMeetings();
   }, [doctorAddress]);
-
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -68,69 +57,87 @@ const PatientDetails = () => {
       }
     };
 
-    fetchPatients(); // Initial fetch
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchPatients();
   }, []);
 
-
-
-  const handleAcceptMeeting = async (index) => {
+  const handleAcceptMeeting = async (meetingIndex) => {
     const contract = await setupContract();
-    // const meetingId = patientMeetings[index].id; // Assuming `id` is the unique identifier
-    console.log("Attempting to accept meeting with ID:", index);
+    const provider = await detectEthereumProvider();
+
+    if (provider) {
+        const accounts = await provider.request({
+          method: "eth_requestAccounts",
+        });
+        const currentAccount = accounts[0];
+        console.log("Current account:", currentAccount);
+        console.log("Doctor's account:", doctorAddress);
+    
+        if (currentAccount.toLowerCase() !== doctorAddress.toLowerCase()) {
+          console.error("Current account is not the doctor.");
+      }
+      return;
+    }
 
     try {
       await contract.methods
-        .acceptMeeting(index) // Pass meeting index to Solidity function
-        .send({ from: patientAddress, gas: 5000000, gasPrice: "20000000000" });
+        .acceptMeeting(meetingIndex)
+        .send({ from: doctorAddress, gas: 5000000, gasPrice: "20000000000" });
       console.log("Meeting accepted successfully!");
-      // Update state after accepting meeting
       fetchDoctorMeetings();
-      fetchPatientMeetings();
     } catch (error) {
-      console.error("Error accepting meeting:", error);
+      console.error("Error accepting meeting:", error.message);
+      if (error.message.includes('revert')) {
+        console.error("Revert reason:", error.message);
+      }
     }
   };
 
-  const handleRejectMeeting = async (index) => {
+  const handleRejectMeeting = async (meetingIndex) => {
     const contract = await setupContract();
-    const meetingId = patientMeetings[index].id; // Assuming `id` is the unique identifier
+    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+    const currentAccount = accounts[0];
+
+    console.log("Current account:", currentAccount);
+    console.log("Doctor's account:", doctorAddress);
+
+    if (currentAccount.toLowerCase() !== doctorAddress.toLowerCase()) {
+      console.error("Current account is not the doctor.");
+      return;
+    }
 
     try {
       await contract.methods
-        .rejectMeeting(index) // Pass meeting index to Solidity function
-        .send({ from: patientAddress, gas: 5000000, gasPrice: "20000000000" });
+        .rejectMeeting(meetingIndex)
+        .send({ from: doctorAddress, gas: 5000000, gasPrice: "20000000000" });
       console.log("Meeting rejected successfully!");
-      // Update state after rejecting meeting
       fetchDoctorMeetings();
-      fetchPatientMeetings();
     } catch (error) {
       console.error("Error rejecting meeting:", error.message);
+      if (error.message.includes('revert')) {
+        console.error("Revert reason:", error.message);
+      }
     }
   };
-  
 
   return (
     <>
-    {/* <DoctorNavbar /> */}
-
-    <div className="container">
+      {/* <DoctorNavbar /> */}
+      <div className="container">
         <div className="doctor-details">
           <h1>
             {patient["firstName"]} {patient["lastName"]}
           </h1>
           <p>Email: {patient["email"]}</p>
           <p>Address: {patient["address"]}</p>
-          <p>Gender: {patient["gender"]}</p> 
+          <p>Gender: {patient["gender"]}</p>
           <p>Phone: {patient["phoneNumber"]}</p>
           <p>Date of Birth: {patient["dateOfBirth"]}</p>
-          <p>BloodGroup: {patient["bloodgroup"]}</p>
-          <p>Wallet Address: {formatWalletAddress(patient["metaMaskAccount"])}</p> 
+          <p>Blood Group: {patient["bloodgroup"]}</p>
+          <p>Wallet Address: {formatWalletAddress(patient["metaMaskAccount"])}</p>
           <p>Insurance Provider: {patient["insuranceProvider"]}</p>
           <p>Policy Number: {patient["policyNumber"]}</p>
         </div>
-    </div>    
+      </div>
       <h2>Doctor's Meetings</h2>
       <table>
         <thead>
@@ -139,28 +146,26 @@ const PatientDetails = () => {
             <th>Meeting Description</th>
             <th>Meeting Time</th>
             <th>Status</th>
-            <th>Accept/ Reject</th>
+            <th>Accept/Reject</th>
           </tr>
         </thead>
         <tbody>
           {doctorMeetings.map((meeting, index) => (
             <tr key={index}>
               <td>
-                {patientLookup[meeting.patientAddress].patient?.firstName}{" "}
-                {patientLookup[meeting.patientAddress].patient?.lastName}
+                {patientLookup[meeting.patientAddress]?.firstName}{" "}
+                {patientLookup[meeting.patientAddress]?.lastName}
               </td>
               <td>{meeting.meetingDescription}</td>
               <td>
-                {" "}
                 {new Date(Number(meeting.meetingTime) * 1000).toLocaleString()}
               </td>
               <td>{meeting.isVerified ? "Accepted" : "Pending"}</td>
               {!meeting.isVerified && (
                 <td>
-                  {" "}
                   <button onClick={() => handleAcceptMeeting(index)}>
                     Accept
-                  </button>{" "}
+                  </button>
                   {" ---- "}
                   <button onClick={() => handleRejectMeeting(index)}>
                     Reject

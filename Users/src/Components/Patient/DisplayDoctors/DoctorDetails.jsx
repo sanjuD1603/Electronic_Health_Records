@@ -117,7 +117,7 @@ const DoctorDetails = () => {
 
   const calculateTimeLeft = (meetingTime) => {
     const now = new Date();
-    const timeLeftInSeconds = meetingTime - Math.floor(now.getTime() / 1000);
+    const timeLeftInSeconds = Number(meetingTime) - Math.floor(now.getTime() / 1000);
     const hours = Math.floor(timeLeftInSeconds / 3600);
     const minutes = Math.floor((timeLeftInSeconds % 3600) / 60);
     return { hours, minutes };
