@@ -1,12 +1,13 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import '../../Patient/DisplayDoctors/css/DoctorCard.css';
+// import '../../Patient/DisplayDoctors/css/DoctorCard.css';
+import '../../Css/DoctorCard.css'
 
 const PatientCard = ({ patient }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  console.log("From Patient Card", patient);
+  // console.log("From Patient Card", patient);
 
   const handleClick = () => {
     navigate(`/doctor/displaypatients/patientdetails/${patient.email}`, { state: { patient } });

@@ -8,9 +8,11 @@ const PatientViewProfile = () => {
   // console.log("Patient view Profile");
   const location = useLocation();
   const navigate = useNavigate();
-  // console.log(location.state)
+  console.log(location.state)
   const metaMaskAccount = location.state?.metaMaskAccount;
   const [formData, setFormData] = useState(null);
+
+  
 
   useEffect(() => {
     setFormData({

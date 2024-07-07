@@ -83,7 +83,7 @@ contract HealthSystem {
         return patientMeetings;
     }
 
-        function acceptMeeting(uint256 meetingIndex) public {
+    function acceptMeeting(uint256 meetingIndex) public {
         require(meetingIndex < meetings.length, "Invalid meeting index");
         require(
             msg.sender == meetings[meetingIndex].doctorAddress,
@@ -98,7 +98,21 @@ contract HealthSystem {
             msg.sender == meetings[meetingIndex].doctorAddress,
             "Only the doctor can reject the meeting"
         );
-        delete meetings[meetingIndex];
+        meetings[meetingIndex].isVerified = false;
+    }
+
+    function getMeeting(
+        uint256 meetingIndex
+    ) public view returns (address, address, uint256, string memory, bool) {
+        require(meetingIndex < meetings.length, "Invalid meeting index");
+        Meeting memory meeting = meetings[meetingIndex];
+        return (
+            meeting.patientAddress,
+            meeting.doctorAddress,
+            meeting.meetingTime,
+            meeting.meetingDescription,
+            meeting.isVerified
+        );
     }
 
     function getDoctorMeetings(

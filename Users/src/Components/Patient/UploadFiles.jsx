@@ -3,14 +3,15 @@ import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 import '../Css/UploadFiles.css'; // Import the CSS file
 import PatientNavbar from "./PatientNavbar";
+
 const UploadFiles = () => {
   const location = useLocation();
   const navigate = useNavigate();
   
-  // console.log(location.state);
-
   const [file, setFile] = useState(null);
+  const [name, setName] = useState('');
   const [uploadStatus, setUploadStatus] = useState([]);
+  const [retrievedFiles, setRetrievedFiles] = useState([]);
   const [metaMaskAccount, setMetaMaskAccount] = useState(() => {
     const savedMetaMaskAccount = localStorage.getItem('metaMaskAccount');
     return savedMetaMaskAccount ? JSON.parse(savedMetaMaskAccount) : '';
@@ -18,7 +19,6 @@ const UploadFiles = () => {
 
   useEffect(() => {
     if (!metaMaskAccount) {
-      // Fetch MetaMask account number from the backend if not available in localStorage
       const fetchMetaMaskAccount = async () => {
         try {
           const response = await axios.get('YOUR_BACKEND_ENDPOINT_TO_FETCH_METAMASK_ACCOUNT');
@@ -46,8 +46,8 @@ const UploadFiles = () => {
   };
 
   const handleUpload = async () => {
-    if (!file) {
-      console.log("No file selected");
+    if (!file || !name) {
+      console.log("File or name is not selected");
       return;
     }
 
@@ -61,9 +61,11 @@ const UploadFiles = () => {
     const metadata = JSON.stringify({
       name: 'Image',
       keyvalues: {
-        metamaskAddress: metaMaskAccount
+        metamaskAddress: metaMaskAccount,
+        uploaderName: name
       }
     });
+    console.log('Metadata to be uploaded:', metadata);
     data.append('pinataMetadata', metadata);
 
     const pinataOptions = JSON.stringify({
@@ -80,7 +82,7 @@ const UploadFiles = () => {
       const response = await axios.post(url, data, {
         maxContentLength: 'Infinity',
         headers: {
-          'Content-Type': `multipart/form-data; boundary=${data._boundary}`,
+          'Content-Type': `multipart/form-data`,
           'pinata_api_key': 'e2285bd92dba86b2dd4e',
           'pinata_secret_api_key': 'a679b0643792e26fbc9eeb0be80fb9c2cddebc7892d3487f260d354acd630fbd',
         },
@@ -101,6 +103,7 @@ const UploadFiles = () => {
           status.fileName === file.name ? { ...status, status: 'success' } : status
         )
       );
+
     } catch (error) {
       console.error('Error during file upload:', error.response ? error.response.data : error.message);
       setUploadStatus((prevStatus) =>
@@ -111,36 +114,75 @@ const UploadFiles = () => {
     }
   };
 
+  const handleRetrieve = async () => {
+    try {
+      const url = `https://api.pinata.cloud/data/pinList?status=pinned&metadata[keyvalues][metamaskAddress]={"value":"${metaMaskAccount}","op":"eq"}`;
+      console.log('Retrieving with URL:', url);
+      const response = await axios.get(url, {
+        headers: {
+          'pinata_api_key': 'e2285bd92dba86b2dd4e',
+          'pinata_secret_api_key': 'a679b0643792e26fbc9eeb0be80fb9c2cddebc7892d3487f260d354acd630fbd',
+        },
+      });
+
+      console.log('Retrieve response:', response.data);
+
+      const files = response.data.rows.map((row) => ({
+        ipfsHash: row.ipfs_pin_hash,
+        uploaderName: row.metadata.keyvalues.uploaderName || 'Unknown'
+      }));
+
+      setRetrievedFiles(files);
+      console.log('Retrieved files:', files);
+    } catch (error) {
+      console.error('Error retrieving files:', error);
+    }
+  };
+
   return (
     <>
-   <PatientNavbar/>
-    <div className="upload-container">
-      <div className="file-upload-box">
-        <input type="file" onChange={handleFileChange} />
-        <button onClick={handleUpload}>Upload</button>
-      </div>
-      <div className="upload-status">
-        {uploadStatus.map((status, index) => (
-          <div key={index} className="file-status-box">
-            <div className="file-info">
-              <span>{status.fileName}</span>
-              <span>{status.progress}%</span>
+      <PatientNavbar />
+      <div className="upload-container">
+        <div className="file-upload-box">
+          <input
+            type="text"
+            placeholder="Your Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <input type="file" onChange={handleFileChange} />
+          <button onClick={handleUpload}>Upload</button>
+          <button onClick={handleRetrieve}>Retrieve</button>
+        </div>
+        <div className="upload-status">
+          {uploadStatus.map((status, index) => (
+            <div key={index} className="file-status-box">
+              <div className="file-info">
+                <span>{status.fileName}</span>
+                <span>{status.progress}%</span>
+              </div>
+              <div className="progress-bar">
+                <div
+                  className={`progress-bar-inner ${status.status}`}
+                  style={{ width: `${status.progress}%` }}
+                ></div>
+              </div>
+              {status.status === 'error' && (
+                <button onClick={handleUpload}>Try Again</button>
+              )}
             </div>
-            <div className="progress-bar">
-              <div
-                className={`progress-bar-inner ${status.status}`}
-                style={{ width: `${status.progress}%` }}
-              ></div>
+          ))}
+        </div>
+        <div className="retrieved-files">
+          {retrievedFiles.map((file, index) => (
+            <div key={index} className="file-card" onClick={() => window.open(`https://gateway.pinata.cloud/ipfs/${file.ipfsHash}`, '_blank')}>
+              <img src={`https://gateway.pinata.cloud/ipfs/${file.ipfsHash}`} alt={`File ${index + 1}`} />
+              <p>Uploaded by: {file.uploaderName}</p>
             </div>
-            {status.status === 'error' && (
-              <button onClick={handleUpload}>Try Again</button>
-            )}
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
     </>
-   
   );
 };
 
