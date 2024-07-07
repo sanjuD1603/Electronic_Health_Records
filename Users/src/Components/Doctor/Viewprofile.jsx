@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import DoctorDashBoard from "./Dashboard";
+import '../Css/Doctorviewprofile.css';  // Import the CSS file
+import doctorprofile from "../assets/Images/doctor-viewprofile.png";  // Import the new profile image
 
 const DoctorViewProfile = () => {
     const location = useLocation();
@@ -8,8 +10,11 @@ const DoctorViewProfile = () => {
     const metaMaskAccount = location.state?.metaMaskAccount;
     const [formData, setFormData] = useState(null);
 
-    console.log(location.state)
-
+    console.log(location.state);
+    const formatWalletAddress = (address) => {
+        if (!address) return '';
+        return `${address.slice(0, 8)}...${address.slice(-5)}`;
+      };
     useEffect(() => {
         setFormData({
             firstName: location.state.doctor["firstName"],
@@ -31,17 +36,24 @@ const DoctorViewProfile = () => {
     return (
         <>
             <DoctorDashBoard />
-            <h1>Welcome Back, Dr. {formData.firstName}!</h1>
-            <p><strong>First Name:</strong> {formData.firstName}</p>
-            <p><strong>Last Name:</strong> {formData.lastName}</p>
-            <p><strong>Date of Birth:</strong> {formData.dateOfBirth}</p>
-            <p><strong>Email:</strong> {formData.email}</p>
-            {/* <p><strong>Gender:</strong> {formData.gender}</p> */}
-            <p><strong>Address:</strong> {formData.address}</p>
-            <p><strong>Phone Number:</strong> {formData.phoneNumber}</p>
-            <p><strong>MetaMask Account:</strong> {formData.metaMaskAccount}</p>
-            <p><strong>Medical License Number:</strong> {formData.medicalLicenseNumber}</p>
-            <p><strong>Years of Experience:</strong> {formData.yearsOfExperience}</p>
+            <div className="profile-container">
+                <div className="profile-image" style={{ backgroundImage: `url(${doctorprofile})` }}></div>
+                <div className="profile-info">
+                    <div className="info-left">
+                        <p><strong>First Name:</strong> {formData.firstName}</p>
+                        <p><strong>Last Name:</strong> {formData.lastName}</p>
+                        <p><strong>Date of Birth:</strong> {formData.dateOfBirth}</p>
+                        <p><strong>Email:</strong> {formData.email}</p>
+                    </div>
+                    <div className="info-right">
+                        <p><strong>Address:</strong> {formData.address}</p>
+                        <p><strong>Phone Number:</strong> {formData.phoneNumber}</p>
+                        <p><strong>MetaMask Account:</strong> {formatWalletAddress(formData.metaMaskAccount)}</p>
+                        <p><strong>Medical License Number:</strong> {formData.medicalLicenseNumber}</p>
+                        <p><strong>Years of Experience:</strong> {formData.yearsOfExperience}</p>
+                    </div>
+                </div>
+            </div>
         </>
     );
 }

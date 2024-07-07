@@ -1,0 +1,32 @@
+.doctor-card {
+    border: 1px solid #ccc;
+    padding: 10px; /* Decreased padding */
+    margin: 90px; /* Decreased margin */
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s y7ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: left; /* Left aligned text */
+    width: 400px; /* Decreased width for smaller card */
+}
+
+.doctor-card:hover {
+    box-shadow: 0 0 10px rgba(76, 211, 248, 0.5);
+}
+
+.doctor-card img {
+    width: 100px; /* Decreased size */
+    height: 100px; /* Decreased size */
+    margin-bottom: 10px;
+    border-radius: 50%;
+}
+
+.doctor-card p {
+    margin: 5px 0;
+}
+
+.doctor-card p strong {
+    font-weight: bold;
+}

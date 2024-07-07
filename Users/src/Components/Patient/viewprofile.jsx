@@ -12,7 +12,7 @@ const PatientViewProfile = () => {
   const metaMaskAccount = location.state?.metaMaskAccount;
   const [formData, setFormData] = useState(null);
 
-  
+
 
   useEffect(() => {
     setFormData({

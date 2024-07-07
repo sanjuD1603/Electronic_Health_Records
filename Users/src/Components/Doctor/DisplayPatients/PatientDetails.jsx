@@ -4,6 +4,7 @@ import { useDoctorContext } from "./DoctorContext";
 import { setupContract } from "../../Ethereum/Contracts/web3";
 import DoctorNavbar from "../DoctorNavbar";
 import detectEthereumProvider from "@metamask/detect-provider";
+import "../../Css/PaitentDetails.css";
 
 const PatientDetails = () => {
   const location = useLocation();
@@ -19,7 +20,7 @@ const PatientDetails = () => {
 
   const formatWalletAddress = (address) => {
     if (!address) return '';
-    return `${address.slice(0, 4)}...${address.slice(-2)}`;
+    return `${address.slice(0, 4)}...${address.slice(-4)}`;
   };
 
   const fetchDoctorMeetings = async () => {
@@ -74,8 +75,11 @@ const PatientDetails = () => {
     
         if (currentAccount.toLowerCase() !== doctorAddress.toLowerCase()) {
           console.error("Current account is not the doctor.");
-      }
-      return;
+          return;
+        }
+    } else {
+        console.error("Ethereum provider not detected.");
+        return;
     }
 
     try {
@@ -121,7 +125,7 @@ const PatientDetails = () => {
 
   return (
     <>
-      {/* <DoctorNavbar /> */}
+      <DoctorNavbar /> 
       <div className="container">
         <div className="doctor-details">
           <h1>
