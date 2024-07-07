@@ -4,7 +4,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { setupContract } from "../Ethereum/Contracts/web3";
 import DoctorGrid from "./DisplayDoctors/DoctorGrid";
 import { usePatientContext } from "./DisplayDoctors/PatientContext";
-
+import "./DisplayDoctors/css/DoctorGrid.css";
+// import "../ /DisplayDoctors/css/DoctorCard.css";
+import "../Css/DoctorCard.css"
 
 const ViewDoctors = () => {
   const location = useLocation();

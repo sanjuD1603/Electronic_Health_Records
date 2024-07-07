@@ -12,6 +12,7 @@ const PaientDashboard = () => {
   return (
     <>
     <PatientNavbar/>
+    <h1>Scheduled COnsultant Meetings</h1>
     </>
   );
 };

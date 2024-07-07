@@ -5,8 +5,10 @@ import profileImage from '../assets/profile-placeholder.jpg'; // Ensure this pat
 import '../Css/PatientViewProfile.css'
 
 const PatientViewProfile = () => {
+  // console.log("Patient view Profile");
   const location = useLocation();
   const navigate = useNavigate();
+  // console.log(location.state)
   const metaMaskAccount = location.state?.metaMaskAccount;
   const [formData, setFormData] = useState(null);
 
