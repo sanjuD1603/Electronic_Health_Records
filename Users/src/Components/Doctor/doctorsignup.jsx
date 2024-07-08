@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { setupContract } from "../Ethereum/Contracts/web3";
  // Make sure the CSS file path is correct
-
+import Navbar from "../Navbar";
 const DoctorSignUp = () => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -114,6 +114,7 @@ const DoctorSignUp = () => {
 
     return (
         <>
+        <Navbar/>
             <h1>Doctor Registration Form</h1>
             <div id="signup-form">
                 <div className="meta-mask-account">

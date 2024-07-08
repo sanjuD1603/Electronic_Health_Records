@@ -7,7 +7,7 @@ import PatientNavbar from "./PatientNavbar";
 const UploadFiles = () => {
   const location = useLocation();
   const navigate = useNavigate();
-// hello
+
   const [file, setFile] = useState(null);
   const [name, setName] = useState('');
   const [uploadStatus, setUploadStatus] = useState([]);
@@ -116,24 +116,36 @@ const UploadFiles = () => {
 
   const handleRetrieve = async () => {
     try {
+      let allFiles = [];
       const url = `https://api.pinata.cloud/data/pinList?status=pinned&metadata[keyvalues][metamaskAddress]={"value":"${metaMaskAccount}","op":"eq"}`;
-      console.log('Retrieving with URL:', url);
-      const response = await axios.get(url, {
+      let response = await axios.get(url, {
         headers: {
           'pinata_api_key': 'e2285bd92dba86b2dd4e',
           'pinata_secret_api_key': 'a679b0643792e26fbc9eeb0be80fb9c2cddebc7892d3487f260d354acd630fbd',
         },
       });
 
-      console.log('Retrieve response:', response.data);
+      allFiles = response.data.rows;
 
-      const files = response.data.rows.map((row) => ({
+      // Check if there are more pages to fetch
+      while (response.data.count > allFiles.length) {
+        url = `https://api.pinata.cloud/data/pinList?status=pinned&metadata[keyvalues][metamaskAddress]={"value":"${metaMaskAccount}","op":"eq"}&pageOffset=${allFiles.length}`;
+        response = await axios.get(url, {
+          headers: {
+            'pinata_api_key': 'e2285bd92dba86b2dd4e',
+            'pinata_secret_api_key': 'a679b0643792e26fbc9eeb0be80fb9c2cddebc7892d3487f260d354acd630fbd',
+          },
+        });
+        allFiles = [...allFiles, ...response.data.rows];
+      }
+
+      const files = allFiles.map((row) => ({
         ipfsHash: row.ipfs_pin_hash,
         uploaderName: row.metadata.keyvalues.uploaderName || 'Unknown'
       }));
 
+      console.log('Files retrieved:', files); // Debug log
       setRetrievedFiles(files);
-      console.log('Retrieved files:', files);
     } catch (error) {
       console.error('Error retrieving files:', error);
     }
