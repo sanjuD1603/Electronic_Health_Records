@@ -109,3 +109,55 @@ ul.meeting-list li, ul.patient-meetings li {
 ul.meeting-list li p, ul.patient-meetings li p {
   margin: 5px 0;
 }
+
+/* Form Container */
+form {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+/* Form Group */
+form div {
+  margin-bottom: 15px;
+}
+
+/* Form Labels */
+form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Form Inputs */
+form input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+/* Special Input Type: datetime-local */
+form input[type="datetime-local"] {
+  padding: 9px;
+}
+
+/* Submit Button */
+form button[type="submit"] {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+form button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+

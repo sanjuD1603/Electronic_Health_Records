@@ -7,7 +7,6 @@ import PatientNavbar from "./PatientNavbar";
 const UploadFiles = () => {
   const location = useLocation();
   const navigate = useNavigate();
-
   const [file, setFile] = useState(null);
   const [name, setName] = useState('');
   const [uploadStatus, setUploadStatus] = useState([]);
@@ -16,6 +15,8 @@ const UploadFiles = () => {
     const savedMetaMaskAccount = localStorage.getItem('metaMaskAccount');
     return savedMetaMaskAccount ? JSON.parse(savedMetaMaskAccount) : '';
   });
+
+  
 
   useEffect(() => {
     if (!metaMaskAccount) {
@@ -117,7 +118,7 @@ const UploadFiles = () => {
   const handleRetrieve = async () => {
     try {
       let allFiles = [];
-      const url = `https://api.pinata.cloud/data/pinList?status=pinned&metadata[keyvalues][metamaskAddress]={"value":"${metaMaskAccount}","op":"eq"}`;
+      let url = `https://api.pinata.cloud/data/pinList?status=pinned&metadata[keyvalues][metamaskAddress]={"value":"${metaMaskAccount}","op":"eq"}`;
       let response = await axios.get(url, {
         headers: {
           'pinata_api_key': 'e2285bd92dba86b2dd4e',
