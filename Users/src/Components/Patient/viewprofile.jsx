@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import PatientNavbar from "./PatientNavbar";
-import profileImage from '../assets/profile-placeholder.jpg'; // Ensure this path is correct
+import profileImage from '../assets/profile-placeholder.jpg'; 
 import '../Css/PatientViewProfile.css'
 
 const PatientViewProfile = () => {

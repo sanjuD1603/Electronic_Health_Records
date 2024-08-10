@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { usePatientContext } from "./PatientContext";
 import { web3, setupContract } from "../../Ethereum/Contracts/web3";
-import PatientNavbar from '../PatientNavbar';
+import PatientNavbar from "../PatientNavbar";
 import "../../Css/DoctorDetails.css";
 
 const DoctorDetails = () => {
@@ -26,7 +26,7 @@ const DoctorDetails = () => {
   const [timeLeft, setTimeLeft] = useState({});
 
   const formatWalletAddress = (address) => {
-    if (!address) return '';
+    if (!address) return "";
     return `${address.slice(0, 4)}...${address.slice(-2)}`;
   };
 
@@ -65,7 +65,7 @@ const DoctorDetails = () => {
     fetchPatientMeetings(); // Initial fetch
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [patientAddress]); // Update on patientAddress change
+  }, [showForm]); // Update on patientAddress change
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -117,7 +117,8 @@ const DoctorDetails = () => {
 
   const calculateTimeLeft = (meetingTime) => {
     const now = new Date();
-    const timeLeftInSeconds = Number(meetingTime) - Math.floor(now.getTime() / 1000);
+    const timeLeftInSeconds =
+      Number(meetingTime) - Math.floor(now.getTime() / 1000);
     const hours = Math.floor(timeLeftInSeconds / 3600);
     const minutes = Math.floor((timeLeftInSeconds % 3600) / 60);
     return { hours, minutes };
@@ -162,7 +163,11 @@ const DoctorDetails = () => {
             formData.meetingTime,
             false
           )
-          .send({ from: patientAddress, gas: 5000000, gasPrice: "20000000000" });
+          .send({
+            from: patientAddress,
+            gas: 5000000,
+            gasPrice: "20000000000",
+          });
         console.log("Meeting created successfully!");
 
         // Refresh meetings data after booking
@@ -382,8 +387,7 @@ const DoctorDetails = () => {
           {patientMeetings.map((meeting, index) => (
             <tr key={index}>
               <td>
-                Dr.{" "}
-                {doctorLookup[meeting.doctorAddress].doctor?.firstName}{" "}
+                Dr. {doctorLookup[meeting.doctorAddress].doctor?.firstName}{" "}
                 {doctorLookup[meeting.doctorAddress].doctor?.lastName}
               </td>
               <td>{meeting.meetingDescription}</td>
