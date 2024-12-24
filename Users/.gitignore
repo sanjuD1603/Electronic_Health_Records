@@ -13,7 +13,7 @@ dist-ssr
 *.local
 .env
 
-src/Components/Ethereum/Contracts/HealthSystem.json
+
 
 # Editor directories and files
 .vscode/*
